@@ -32,6 +32,10 @@ Subclasses should implement at least:
 - COPY-PROBLEM, makes an independent copy of the problem.
 - SPLIT-DOMAIN, takes two prorblems and adjust the domains, used in SPLIT-PROBLEM"))
 
+(defclass constraint () ())
+
+(defclass domain () ())
+
 (defgeneric solve (solver problem)
   (:documentation "Takes a SOLVER and PROBLEM and tries to solve the problem.
 The return value is either a problem that is solved or nil, if no solution is found."))
@@ -47,7 +51,6 @@ size of one, the solver cannot make progress."))
 The function will return two new problems as a cons cell: (PROB1 . PROB2).
 
 PROB1 and PROB2 are copies of PROBLEM, but with the domain of VARIABLE reduced."))
-
 
 (defgeneric propagate-and-solve (solver problem &rest vars)
   (:documentation "First propagate the domain of VARS and after that call solve the reduced problem."))
@@ -65,19 +68,24 @@ variables occur."))
 
 A problem is solved if and only if all the variables have a domain containing exactly one value."))
 
+(defgeneric no-solution-p (problem)
+  (:documentation "Returns true if there is no solution.  Note, that returning
+nil does not guarentee a solution. "))
+
 (defmethod solve ((solver solver) (problem problem))
   "Basic solver, returns a solution, no cost optimization"
+  (unless (no-solution-p problem)
     (let ((var (pick-variable solver problem)))
       (destructuring-bind (prob-1 . prob-2) (split-problem solver problem var)
 	(or (propagate-and-solve solver prob-1 var)
-	    (propagate-and-solve solver prob-2 var)))))
+	    (propagate-and-solve solver prob-2 var))))))
 
 (defmethod propagate-and-solve ((solver solver) (problem problem) &rest vars)
   "Returns a solved problem or nil."
-  (when (propagate solver problem vars)
-    (if (solved-p problem)
-	problem
-	(solve solver problem))))
+  (propagate solver problem vars)
+  (if (solved-p problem)
+      problem
+      (solve solver problem)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -86,14 +94,29 @@ A problem is solved if and only if all the variables have a domain containing ex
 (defgeneric domain (problem variable))
 (defgeneric domain-size (problem variable))
 (defgeneric domain-size-1 (problem variable))
+(defgeneric domain-size-0 (problem variable))
 (defgeneric split-domain (problem-1 problem-2 variable))
 
 (defmethod solved-p ((problem problem))
-  (every #'domain-size-1 (variables problem)))
+  (fset/every-with-carry #'domain-size-1 problem (variables problem)))
+
+(defmethod no-solution-p ((problem problem))
+  (fset/some-with-carry #'domain-size-0 problem (variables problem)))
 
 (defmethod pick-variable ((solver solver) (problem problem))
-  (find-min (variables problem)
-	    :value (lambda (var) (domain-size problem var))))
+  (loop :with vars = (variables problem)
+	:with result-var = nil
+	:with result-ds  = nil
+	:until (fset:empty? vars)
+	:for var = (fset:arb vars)
+	:for ds  = (domain-size problem var)
+	:do
+	   (setf vars (fset:less vars var))
+	   (when (and (> ds 1)
+		      (or (not result-ds) (> result-ds ds)))
+	     (setf result-ds ds)
+	     (setf result-var var))
+	:finally (return result-var)))
 
 (defmethod split-problem ((solver solver) (problem problem) (var t))
   (let ((prob-1 (copy-problem problem))
@@ -101,12 +124,30 @@ A problem is solved if and only if all the variables have a domain containing ex
     (split-domain prob-1 prob-2 var)
     (cons prob-1 prob-2)))
 
+(defmethod domain (problem variable)
+  "Hm, is this really needed?"
+  (error "Need concrete sub class"))
+
 (defmethod domain-size (problem variable)
-  (length (domain problem variable)))
+  (error "Need concrete sub class"))
 
 (defmethod domain-size-1 (problem variable)
   "Default implementation, can be improved"
   (= 1 (domain-size problem variable)))
 
+(defmethod domain-size-0 (problem variable)
+  "Default implementation, can be improved"
+  (= 0 (domain-size problem variable)))
+
 (defmethod copy-problem ((problem problem))
   (error "Need concrete sub class"))
+
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defgeneric constraints (problem variable)
+  (:documentation "Returns constraints for VARIABLE.
+If VARIABLE is nil, return all the constraints of the PROBLEM.
+
+Returns a fset:set"))
