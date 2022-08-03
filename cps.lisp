@@ -111,7 +111,7 @@ nil does not guarentee a solution. "))
 	:for var = (fset:arb vars)
 	:for ds  = (domain-size problem var)
 	:do
-	   (setf vars (fset:less vars var))
+	   (fset:excludef vars var)
 	   (when (and (> ds 1)
 		      (or (not result-ds) (> result-ds ds)))
 	     (setf result-ds ds)

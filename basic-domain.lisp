@@ -20,6 +20,15 @@
 
 
 
-(defmethod domain-without ((domain basic-domain) position)
-  (let* ((content (content domain)))
-    (make-instance 'basic-domain :content (fset:less content position))))
+(defmethod domain-without ((domain basic-domain) value)
+  (let* ((content (content domain))
+	 (position (fset:position value content)))
+    (if position
+	(values 
+	 (make-instance 'basic-domain :content (fset:less content position))
+	 t)
+	(values domain nil))))
+
+
+(defmethod any-value ((domain basic-domain))
+  (fset:first (content domain)))

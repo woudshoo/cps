@@ -25,13 +25,13 @@ specified which element it returns."
 (defun set-from-list (list)
   (let ((result (fset:empty-set)))
     (loop :for e :in list :do
-      (setf result (fset:with result e)))
+      (fset:includef result e))
     result))
 
 (defun seq-from-list (list)
   (let ((result (fset:empty-seq)))
     (loop :for e :in list :do
-      (setf result (fset:with-last result e)))
+      (fset:push-last result e))
     result))
 
 
@@ -42,7 +42,7 @@ specified which element it returns."
 	:for result = (funcall predicate carry value)
 	:do
 	   (when result (return-from fset/some-with-carry result))
-	   (setf collection (fset:less collection value)))
+	   (fset:excludef collection value))
   nil)
 
 (defun fset/every-with-carry (predicate carry collection)
@@ -51,12 +51,12 @@ specified which element it returns."
 	:for result = (funcall predicate carry value)
 	:do
 	   (unless result (return-from fset/every-with-carry result))
-	   (setf collection (fset:less collection value)))
+	   (fset:excludef collection value))
   t)
 
 (defun fset/map-values (map)
   (let ((result (fset:empty-set)))
     (fset:do-map (k v map)
       (declare (ignore k))
-      (setf result (fset:union result v)))
+      (fset:unionf result v))
     result))

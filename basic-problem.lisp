@@ -37,31 +37,14 @@
 
 (defmethod update-domain ((problem basic-problem) variable (new-domain domain))
   (with-slots (var-map) problem
-    (setf var-map (fset:with var-map variable new-domain))))
+    (fset:includef var-map variable new-domain)))
 
 (defmethod split-domain ((prob-1 basic-problem) (prob-2 basic-problem) var)
   (let ((domains (split (domain prob-1 var))))
     (update-domain prob-1 var (first domains))
     (update-domain prob-2 var (second domains))))
 
-
 (defmethod constraints ((problem basic-problem) var)
   (fset:lookup (constraint-map problem) var))
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Tests
 
-(defun make-basic-problem (var-with-domains)
-  (let ((var-map (fset:empty-map))
-	(vars (fset:empty-set)))
-    (loop :for (var . values) :in var-with-domains
-	  :do
-	     (setf vars (fset:with vars var))
-	     (setf var-map (fset:with var-map var (make-instance 'basic-domain :content (seq-from-list values)))))
-    (make-instance 'basic-problem :var-map var-map :variables vars)))
 
-(defun add-all-different (problem vars)
-  (let ((constraint (make-instance 'basic-all-different :variables (set-from-list vars))))
-    (add-constraint problem constraint)))
-
-;;;  262 707 5630  cell.
-;;   262 675 6147  home.
