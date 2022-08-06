@@ -19,7 +19,6 @@
      (make-instance 'basic-domain :content (fset:subseq content cut-off)))))
 
 
-
 (defmethod domain-without ((domain basic-domain) value)
   (let* ((content (content domain))
 	 (position (fset:position value content)))
@@ -30,5 +29,21 @@
 	(values domain nil))))
 
 
+(defmethod domain-without-< ((domain basic-domain) value)
+  (make-instance 'basic-domain
+		 :content (fset:filter (lambda (v) (>= v value)) (content domain))))
+
+(defmethod domain-without-> ((domain basic-domain) value)
+  (make-instance 'basic-domain
+		 :content (fset:filter (lambda (v) (<= v value)) (content domain))))
+
 (defmethod any-value ((domain basic-domain))
   (fset:first (content domain)))
+
+(defmethod min-value ((domain basic-domain))
+  (unless (fset:empty? (content domain))
+    (fset:reduce #'min (content domain))))
+
+(defmethod max-value ((domain basic-domain))
+  (unless (fset:empty? (content domain))
+    (fset:reduce #'max (content domain))))

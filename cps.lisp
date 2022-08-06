@@ -1,4 +1,4 @@
-;;;; cps.lisp
+;;; cps.lisp
 
 (in-package #:cps)
 
@@ -143,11 +143,19 @@ nil does not guarentee a solution. "))
   (error "Need concrete sub class"))
 
 
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defgeneric constraints (problem variable)
   (:documentation "Returns constraints for VARIABLE.
 If VARIABLE is nil, return all the constraints of the PROBLEM.
-
 Returns a fset:set"))
+
+;;; constraint methods
+
+(defmethod variables ((constraint constraint))
+  "Variables used by the constraint."
+  (fset:empty-set))
+
+(defmethod propagate (solver problem (constraint constraint))
+  "Solve the constraint and return the variables with modified constraints."
+  (fset:empty-set))
