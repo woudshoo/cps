@@ -3,9 +3,6 @@
 (defclass basic-solver (solver)
   ())
 
-#+nil (defmethod solve ((solver basic-solver) (problem problem))
-  (call-next-method))
-
 
 (defmethod propagate ((solver basic-solver) problem (vars fset:set))
   "Propagates the variabes in the set."
@@ -19,9 +16,9 @@
       (loop :until (fset:empty? constraints-todo)
 	    :for constraint = (fset:arb constraints-todo)
 	    :do
-	       (add-vars (or (propagate solver problem constraint)
-			     (fset:empty-set)))
-	       (fset:excludef constraints-todo constraint)))))
+	       (add-vars (propagate solver problem constraint))
+	       (fset:excludef constraints-todo constraint))))
+  (fset:empty-set))
 
 (defmethod propagate ((solver basic-solver) problem (vars list))
   (propagate solver problem (set-from-list vars)))

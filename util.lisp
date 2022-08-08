@@ -1,7 +1,7 @@
 (in-package #:cps)
 
 
-(defun find-min (list &key (value #'identity))
+#+nil (defun find-min (list &key (value #'identity))
   "Find element in LIST that minimizes the VALUE of the element.
 
 VALUE is a function taking one argument returning a number when applied
@@ -60,3 +60,24 @@ specified which element it returns."
       (declare (ignore k))
       (fset:unionf result v))
     result))
+
+
+
+
+(defmacro fset/do-set ((var set initial-content) &body body)
+  "Iterates over the working set SET by binding VAR
+to each element of SET.   The SET is initialized with INITIAL-CONTENT.
+During iteration the SET can be modified.
+
+The modification is the whole point of this macro."
+  `(let ((,set ,initial-content)
+	 ,var)
+       (tagbody
+	loop
+	  (when (fset:empty? ,set)
+	    (go end))
+	  (setf ,var (fset:arb ,set))
+	  (fset:excludef ,set ,var)
+	  ,@body
+	  (go loop)
+	  end)))

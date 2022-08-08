@@ -1,5 +1,6 @@
 (in-package #:cps)
 
+
 (defclass basic-domain (domain)
   ((content :reader content :initarg :content))
   (:default-initargs :content (fset:empty-seq)))
@@ -20,6 +21,8 @@
 
 
 (defmethod domain-without ((domain basic-domain) value)
+  "Reutnrs a domain whose content is the same as DOMAIN except
+VALUE is removed.  p"
   (let* ((content (content domain))
 	 (position (fset:position value content)))
     (if position
@@ -30,20 +33,27 @@
 
 
 (defmethod domain-without-< ((domain basic-domain) value)
+  "Returns a new DOMAIN with content containing only values >= VALUE."
   (make-instance 'basic-domain
 		 :content (fset:filter (lambda (v) (>= v value)) (content domain))))
 
 (defmethod domain-without-> ((domain basic-domain) value)
+  "Returns a new DOMAIN whose content only contains values <= than VALUE."
   (make-instance 'basic-domain
 		 :content (fset:filter (lambda (v) (<= v value)) (content domain))))
 
 (defmethod any-value ((domain basic-domain))
+  "Returns an arbitrary value out of DOMAIN"
   (fset:first (content domain)))
 
 (defmethod min-value ((domain basic-domain))
+  "Returns the smallest value of the DOMAIN.
+If the domainis empty return nil."
   (unless (fset:empty? (content domain))
     (fset:reduce #'min (content domain))))
 
 (defmethod max-value ((domain basic-domain))
+  "Reeturns the largest value of DOMAIN.
+If the domain is empty return nil."
   (unless (fset:empty? (content domain))
     (fset:reduce #'max (content domain))))
