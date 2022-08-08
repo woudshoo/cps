@@ -98,10 +98,10 @@ nil does not guarentee a solution. "))
 (defgeneric split-domain (problem-1 problem-2 variable))
 
 (defmethod solved-p ((problem problem))
-  (fset/every-with-carry #'domain-size-1 problem (variables problem)))
+  (fset/every-with-carry-set #'domain-size-1 problem (variables problem)))
 
 (defmethod no-solution-p ((problem problem))
-  (fset/some-with-carry #'domain-size-0 problem (variables problem)))
+  (fset/some-with-carry-set #'domain-size-0 problem (variables problem)))
 
 (defmethod pick-variable ((solver solver) (problem problem))
   (loop :with vars = (variables problem)

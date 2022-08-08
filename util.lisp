@@ -35,8 +35,12 @@ specified which element it returns."
     result))
 
 
+(defun fset/some-with-carry-set (predicate carry set)
+  (fset:do-set (v set)
+    (when-let (result (funcall predicate carry v))
+      (return-from fset/some-with-carry-set result))))
 
-(defun fset/some-with-carry (predicate carry collection)
+#+nil (defun fset/some-with-carry (predicate carry collection)
   (loop :until (fset:empty? collection)
 	:for value = (fset:arb collection)
 	:for result = (funcall predicate carry value)
@@ -45,7 +49,13 @@ specified which element it returns."
 	   (fset:excludef collection value))
   nil)
 
-(defun fset/every-with-carry (predicate carry collection)
+(defun fset/every-with-carry-set (predicate carry set)
+  (fset:do-set (v set)
+    (unless (funcall predicate carry v)
+      (return-from fset/every-with-carry-set)))
+  t)
+
+#+nil (defun fset/every-with-carry (predicate carry collection)
   (loop :until (fset:empty? collection)
 	:for value = (fset:arb collection)
 	:for result = (funcall predicate carry value)
@@ -54,7 +64,13 @@ specified which element it returns."
 	   (fset:excludef collection value))
   t)
 
+
 (defun fset/map-values (map)
+  (fset:reduce (lambda (r k v) (declare (ignore k)) (fset:union r v))
+	       map
+	       :initial-value (fset:empty-set)))
+
+#+nil (defun fset/map-values (map)
   (let ((result (fset:empty-set)))
     (fset:do-map (k v map)
       (declare (ignore k))

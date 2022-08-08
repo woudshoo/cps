@@ -5,7 +5,7 @@
   :author "Your Name <your.name@example.com>"
   :license  "Specify license here"
   :version "0.0.1"
-  :depends-on (#:wo-util #:fset)
+  :depends-on (#:wo-util #:fset #:alexandria)
   :serial t
   :components ((:file "package")
 	       (:file "util")
