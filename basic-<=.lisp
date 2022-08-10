@@ -1,6 +1,5 @@
 (in-package #:cps)
 
-
 (defclass basic-<=-constraint (constraint)
   ((variables :reader variables)
    (var-seq :reader var-seq :initarg :var-seq)

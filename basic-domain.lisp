@@ -42,5 +42,5 @@ VALUE is removed.  p"
 (defmacro make-domain-filter ((name class value) filter)
   (let ((d (gensym)))
     `(defmethod ,name ((,d ,class) ,value)
-       (make-instance (class-of ,d))
-       :content (fset:filter ,filter (content ,d))))))
+       (make-instance (class-of ,d)
+		      :content (fset:filter ,filter (content ,d))))))
