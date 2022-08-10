@@ -13,11 +13,12 @@
   (fset:size (content domain)))
 
 (defmethod split ((domain basic-domain))
-  (let* ((content (content domain))
+  (let* ((class   (class-of domain))
+	 (content (content domain))
 	 (cut-off (floor (fset:size content) 2)))
     (list
-     (make-instance 'basic-domain :content (fset:subseq content 0 cut-off))
-     (make-instance 'basic-domain :content (fset:subseq content cut-off)))))
+     (make-instance class :content (fset:subseq content 0 cut-off))
+     (make-instance class :content (fset:subseq content cut-off)))))
 
 
 (defmethod domain-without ((domain basic-domain) value)
@@ -27,33 +28,19 @@ VALUE is removed.  p"
 	 (position (fset:position value content)))
     (if position
 	(values 
-	 (make-instance 'basic-domain :content (fset:less content position))
+	 (make-instance (class-of domain) :content (fset:less content position))
 	 t)
 	(values domain nil))))
-
-
-(defmethod domain-without-< ((domain basic-domain) value)
-  "Returns a new DOMAIN with content containing only values >= VALUE."
-  (make-instance 'basic-domain
-		 :content (fset:filter (lambda (v) (>= v value)) (content domain))))
-
-(defmethod domain-without-> ((domain basic-domain) value)
-  "Returns a new DOMAIN whose content only contains values <= than VALUE."
-  (make-instance 'basic-domain
-		 :content (fset:filter (lambda (v) (<= v value)) (content domain))))
 
 (defmethod any-value ((domain basic-domain))
   "Returns an arbitrary value out of DOMAIN"
   (fset:first (content domain)))
 
-(defmethod min-value ((domain basic-domain))
-  "Returns the smallest value of the DOMAIN.
-If the domainis empty return nil."
-  (unless (fset:empty? (content domain))
-    (fset:reduce #'min (content domain))))
 
-(defmethod max-value ((domain basic-domain))
-  "Reeturns the largest value of DOMAIN.
-If the domain is empty return nil."
-  (unless (fset:empty? (content domain))
-    (fset:reduce #'max (content domain))))
+
+
+(defmacro make-domain-filter ((name class value) filter)
+  (let ((d (gensym)))
+    `(defmethod ,name ((,d ,class) ,value)
+       (make-instance (class-of ,d))
+       :content (fset:filter ,filter (content ,d))))))
