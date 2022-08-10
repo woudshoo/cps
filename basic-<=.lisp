@@ -19,6 +19,7 @@
     (format s "~A [gap: ~A]" (var-seq c) (gap c))))
 
 (defun propagate-<=-internal (problem constraint fn-min fn-max fn-without< fn-without>)
+  "Function used to implement ordering constraint."
     (let ((vars-changed (fset:empty-set))
 	(gap (gap constraint))
 	(cut-off nil))
@@ -44,9 +45,12 @@
     vars-changed))
 
 (defmethod propagate ((solver solver) (problem basic-problem) (constraint basic-<=-constraint))
-  (propagate-<=-internal problem constraint #'min-value #'max-value #'domain-without-< #'domain-without->))
+  (propagate-<=-internal problem constraint
+			 #'min-value #'max-value
+			 #'domain-without-< #'domain-without->))
 
 
+;;; 2D  X constraint
 (defclass basic-2d-<=-x-constraint (basic-<=-constraint)
   ())
 
@@ -54,3 +58,12 @@
   (propagate-<=-internal problem constraint
 			 #'min-x-value #'max-x-value
 			 #'domain-without-<-x #'domain-without->-x))
+
+;;; 2D Y constraint
+(defclass basic-2d-<=-y-constraint (basic-<=-constraint)
+  ())
+
+(defmethod propagate ((solver solver) (problem basic-problem) (constraint basic-2d-<=-y-constraint))
+  (propagate-<=-internal problem constraint
+			 #'min-y-value #'max-y-value
+			 #'domain-without-<-y #'domain-without->-y))
