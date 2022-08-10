@@ -17,7 +17,8 @@ when a domain becomes size 1."))
 
 
 
-(defmethod propagate (solver (problem basic-problem) (constraint basic-all-different))
+(defmethod propagate ((solver solver) (problem basic-problem) (constraint basic-all-different))
+;  (format t "P: ~A~%" constraint)
   (let ((vars-changed (fset:empty-set)))
     (fset/do-set (var vars-todo (variables constraint))
       (let ((var-domain (domain problem var)))
@@ -59,7 +60,7 @@ when a domain becomes size 1."))
     (format s "~A [gap: ~A]" (var-seq c) (gap c))))
 
 
-(defmethod propagate (solver (problem basic-problem) (constraint basic-<=-constraint))
+(defmethod propagate ((solver solver) (problem basic-problem) (constraint basic-<=-constraint))
   (let ((vars-changed (fset:empty-set))
 	(gap (gap constraint))
 	(cut-off nil))

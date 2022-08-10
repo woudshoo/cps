@@ -72,20 +72,6 @@ A problem is solved if and only if all the variables have a domain containing ex
   (:documentation "Returns true if there is no solution.  Note, that returning
 nil does not guarentee a solution. "))
 
-(defmethod solve ((solver solver) (problem problem))
-  "Basic solver, returns a solution, no cost optimization"
-  (unless (no-solution-p problem)
-    (let ((var (pick-variable solver problem)))
-      (destructuring-bind (prob-1 . prob-2) (split-problem solver problem var)
-	(or (propagate-and-solve solver prob-1 var)
-	    (propagate-and-solve solver prob-2 var))))))
-
-(defmethod propagate-and-solve ((solver solver) (problem problem) &rest vars)
-  "Returns a solved problem or nil."
-  (propagate solver problem vars)
-  (if (solved-p problem)
-      problem
-      (solve solver problem)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -103,26 +89,6 @@ nil does not guarentee a solution. "))
 (defmethod no-solution-p ((problem problem))
   (fset/some-with-carry-set #'domain-size-0 problem (variables problem)))
 
-(defmethod pick-variable ((solver solver) (problem problem))
-  (loop :with vars = (variables problem)
-	:with result-var = nil
-	:with result-ds  = nil
-	:until (fset:empty? vars)
-	:for var = (fset:arb vars)
-	:for ds  = (domain-size problem var)
-	:do
-	   (fset:excludef vars var)
-	   (when (and (> ds 1)
-		      (or (not result-ds) (> result-ds ds)))
-	     (setf result-ds ds)
-	     (setf result-var var))
-	:finally (return result-var)))
-
-(defmethod split-problem ((solver solver) (problem problem) (var t))
-  (let ((prob-1 (copy-problem problem))
-	(prob-2 (copy-problem problem)))
-    (split-domain prob-1 prob-2 var)
-    (cons prob-1 prob-2)))
 
 (defmethod domain (problem variable)
   "Hm, is this really needed?"
@@ -130,6 +96,15 @@ nil does not guarentee a solution. "))
 
 (defmethod domain-size (problem variable)
   (error "Need concrete sub class"))
+
+#+nil(defmethod domain-size (problem (variable (eql t)))
+  (fset:reduce #'+ (variables problem) :key (lambda (v) (domain-size problem v))))
+
+(defmethod domain-size (problem (variables fset:set))
+  (fset:reduce #'+ variables :key (lambda (v) (domain-size problem v))))
+
+
+
 
 (defmethod domain-size-1 (problem variable)
   "Default implementation, can be improved"
@@ -156,6 +131,6 @@ Returns a fset:set"))
   "Variables used by the constraint."
   (fset:empty-set))
 
-(defmethod propagate (solver problem (constraint constraint))
+(defmethod propagate ((solver solver) (problem problem) (constraint constraint))
   "Solve the constraint and return the variables with modified constraints."
   (fset:empty-set))

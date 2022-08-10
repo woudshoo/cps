@@ -14,6 +14,11 @@
 	    (var-map problem)
 	    (fset/map-values (constraint-map problem)))))
 
+
+;;; Constraints
+(defmethod constraints ((problem basic-problem) var)
+  (or (fset:lookup (constraint-map problem) var) (fset:empty-set)))
+
 (defmethod add-constraint ((problem basic-problem) (constraint constraint))
   (with-slots (constraint-map) problem
     (fset:do-set (v (variables constraint))
@@ -26,9 +31,14 @@
 (defmethod domain ((problem basic-problem) var)
   (fset:lookup (var-map problem) var))
 
+;;; TODO need to specialize on fset.
 (defmethod domain-size ((problem basic-problem) var)
   (size (domain problem var)))
 
+(defmethod domain-size ((problem basic-problem) (variable (eql t)))
+  (fset:reduce #'+ (variables problem) :key (lambda (v) (domain-size problem v))))
+
+;;; Solver Helpers
 (defmethod copy-problem ((problem basic-problem))
   (make-instance (class-of problem)
 		 :var-map (var-map problem)
@@ -44,7 +54,5 @@
     (update-domain prob-1 var (first domains))
     (update-domain prob-2 var (second domains))))
 
-(defmethod constraints ((problem basic-problem) var)
-  (fset:lookup (constraint-map problem) var))
 
 
