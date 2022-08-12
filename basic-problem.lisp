@@ -15,6 +15,13 @@
 	    (fset/map-values (constraint-map problem)))))
 
 
+;;; Variables
+
+(defmethod add-variable ((problem basic-problem) var domain)
+  (with-slots (var-map variables) problem
+    (fset:includef variables var)
+    (fset:includef var-map var domain)))
+
 ;;; Constraints
 (defmethod constraints ((problem basic-problem) var)
   (or (fset:lookup (constraint-map problem) var) (fset:empty-set)))
