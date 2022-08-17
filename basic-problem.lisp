@@ -38,12 +38,6 @@
 (defmethod domain ((problem basic-problem) var)
   (fset:lookup (var-map problem) var))
 
-;;; TODO need to specialize on fset.
-(defmethod domain-size ((problem basic-problem) var)
-  (size (domain problem var)))
-
-(defmethod domain-size ((problem basic-problem) (variable (eql t)))
-  (fset:reduce #'+ (variables problem) :key (lambda (v) (domain-size problem v))))
 
 ;;; Solver Helpers
 (defmethod copy-problem ((problem basic-problem))

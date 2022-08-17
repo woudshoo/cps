@@ -32,7 +32,7 @@
 
 
 
-(defun add-2d-variable (problem var max-x max-y)
+#+nil (defun add-2d-variable (problem var max-x max-y)
   (let ((2d-domain (make-instance 'basic-2d-domain
 				  :content
 				  (seq-from-list
@@ -55,13 +55,28 @@
 (defun test-2 ()
   (let ((p (make-instance 'basic-problem))
 	(s (make-instance 'basic-solver)))
-    (add-2d-variable p 'a 3 3)
-    (add-2d-variable p 'b 3 3)
-    (add-2d-variable p 'c 3 3)
-    (add-2d-variable p 'd 2 3)
+    (add-2d-variable p 'a :max-x 3 :max-y 3)
+    (add-2d-variable p 'b :max-x 3 :max-y 3)
+    (add-2d-variable p 'c :max-x 3 :max-y 3)
+    (add-2d-variable p 'd :max-x 2 :max-y 3)
     (add-all-different p '(a b c d))
     (add-<x p 'a 'b)
     (add-<y p 'a 'c)
     (add-<x p 'c 'd)
     (add-<y p 'b 'd)
+    (solve s p)))
+
+
+(defun test-3 ()
+    (let ((p (make-instance 'basic-problem))
+	  (s (make-instance 'basic-solver)))
+    (add-2d-variable p "a" :max-x 3 :max-y 3)
+    (add-2d-variable p "b" :max-x 3 :max-y 3)
+    (add-2d-variable p "c" :max-x 3 :max-y 3)
+    (add-2d-variable p "d" :max-x 2 :max-y 3)
+    (add-all-different p '("a" "b" "c" "d"))
+    (add-<x p "a" "b")
+    (add-<y p "a" "c")
+    (add-<x p "c" "d")
+    (add-<y p "b" "d")
     (solve s p)))

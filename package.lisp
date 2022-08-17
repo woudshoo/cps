@@ -9,4 +9,9 @@
   (:export
    #:problem
    #:solver
-   #:solve))
+   #:solve
+   #:basic-solver
+   #:basic-problem
+   #:add-2d-variable
+   #:add-<y-constraint
+   #:add-<x-constraint))

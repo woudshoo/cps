@@ -18,10 +18,9 @@ It requires that the problem to be solved supports the following:
 (defmethod propagate ((solver basic-solver) (problem problem) (vars fset:set))
   "Propagates the variabes in the set."
   (let ((constraints-todo (fset:empty-set)))
-    (labels ((add-var (var)
-	       (fset:unionf constraints-todo (constraints problem var)))
-	     (add-vars (vars)
-	       (fset:do-set (v vars) (add-var v))))
+    (flet ((add-vars (vars)
+	     (fset:do-set (v vars)
+	       (fset:unionf constraints-todo (constraints problem v)))))
       
       (add-vars vars)
       (loop :until (fset:empty? constraints-todo)
@@ -31,15 +30,16 @@ It requires that the problem to be solved supports the following:
 	       (fset:excludef constraints-todo constraint))))
   (fset:empty-set))
 
-(defmethod propagate ((solver basic-solver) (problem problem) (vars list))
+#+nil (defmethod propagate ((solver basic-solver) (problem problem) (vars list))
   (propagate solver problem (set-from-list vars)))
 
-(defmethod propagate ((solver basic-solver) (problem problem) (var symbol))
+#+nil (defmethod propagate ((solver basic-solver) (problem problem) (var symbol))
+  "This is a shortcut, should not be used because it limits var's to be symbols"
   (propagate solver problem (fset:set var)))
 
 
 ;;;; Picking Branch variable
-(defmethod pick-variable ((solver basic-solver) (problem problem))
+#+nil (defmethod pick-variable ((solver basic-solver) (problem problem))
   (loop :with vars = (variables problem)
 	:with result-var = nil
 	:with result-ds  = nil
@@ -53,6 +53,16 @@ It requires that the problem to be solved supports the following:
 	     (setf result-ds ds)
 	     (setf result-var var))
 	:finally (return result-var)))
+
+(defmethod pick-variable ((solver basic-solver) (problem problem))
+  (let (result-var result-ds)
+    (fset:do-set (var (variables problem))
+      (let ((ds (domain-size problem var)))
+	(when (and (> ds 1)
+		   (or (not result-ds) (> result-ds ds)))
+	  (setf result-ds ds)
+	  (setf result-var var))))
+    result-var))
 
 (defmethod split-problem ((solver basic-solver) (problem problem) (var t))
   (let ((prob-1 (copy-problem problem))
@@ -73,7 +83,6 @@ It requires that the problem to be solved supports the following:
       
       (setf problem (copy-problem problem))
       (add-candidate problem (variables problem))
-      
       (loop :until (priority-queue-empty-p candidates)
 	    :for candidate = (priority-queue-pop candidates)
 	    :do
@@ -82,6 +91,6 @@ It requires that the problem to be solved supports the following:
 		; ((no-solution-p candidate) nil)
 		 (t (let* ((var (pick-variable solver candidate))
 			   (sub (split-problem solver candidate var)))
-		      (add-candidate (car sub) var)
-		      (add-candidate (cdr sub) var))))))
+		      (add-candidate (car sub) (fset:set var))
+		      (add-candidate (cdr sub) (fset:set var)))))))
     (values nil count)))

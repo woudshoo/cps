@@ -14,6 +14,7 @@
 	       (:file "basic-solver")
 	       (:file "basic-domain")
 	       (:file "basic-number-domain")
+	       (:file "z-order")
 	       (:file "basic-2d-domain")
 	       (:file "basic-constraints")
 	       (:file "basic-all-different")

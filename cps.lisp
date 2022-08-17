@@ -95,7 +95,7 @@ nil does not guarentee a solution. "))
   (error "Need concrete sub class"))
 
 (defmethod domain-size (problem variable)
-  (error "Need concrete sub class"))
+  (size (domain problem variable)))
 
 #+nil(defmethod domain-size (problem (variable (eql t)))
   (fset:reduce #'+ (variables problem) :key (lambda (v) (domain-size problem v))))
