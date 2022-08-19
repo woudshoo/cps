@@ -58,8 +58,9 @@
     (add-2d-variable p 'a :max-x 3 :max-y 3)
     (add-2d-variable p 'b :max-x 3 :max-y 3)
     (add-2d-variable p 'c :max-x 3 :max-y 3)
-    (add-2d-variable p 'd :max-x 2 :max-y 3)
+    (add-2d-variable p 'd :max-x 4 :max-y 3)
     (add-all-different p '(a b c d))
+    (add-constraint p (make-instance 'basic-2d-range-x-constraint :var-seq '(a b c d) :gap 2))
     (add-<x p 'a 'b)
     (add-<y p 'a 'c)
     (add-<x p 'c 'd)
@@ -101,4 +102,15 @@
 
 (defmethod test-m ((b B))
   (pop (sets-b b)))
+
+
+;;;;;;;;;;;
+;;; domain test
+
+
+(defun test-d-1 ()
+  (let ((p (make-instance 'basic-problem)))
+    (add-2d-variable p 'a :max-x 3 :max-y 3)
+    (format t "DOmain: ~A~%" (domain p 'a))
+    (domain-without->-x )))
 

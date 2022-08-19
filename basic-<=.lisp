@@ -63,7 +63,6 @@ for all i > i :   v_1 + gap <= v_i"
 	     (max-v (v)
 	       (or (funcall fn-max (domain problem v)) (return-from propagate-min-internal (fset:empty-set)))))
 	;; walk left to right
-
 	(loop
 	  :with boundary-v = (funcall iter :get)
 	  :with cut-off-1 = (+  (min-v boundary-v) gap)
@@ -73,10 +72,10 @@ for all i > i :   v_1 + gap <= v_i"
 	  :for min-v = (min-v v)
 	  :for max-v = (max-v v)
 	  :when (< min-v cut-off-1) :do
-	    (funcall fn-without< (domain problem v) cut-off-1)
+	    (update-domain problem v (funcall fn-without< (domain problem v) cut-off-1))
 	    (fset:includef vars-changed v)
-	  :when (< cut-off-2 max-v) :do
-	    (funcall fn-without> (domain problem boundary-v) (- max-v gap))
+	  :when (> cut-off-2 max-v) :do
+	    (update-domain problem boundary-v (funcall fn-without> (domain problem boundary-v) (- max-v gap)))
 	    (fset:includef vars-changed boundary-v)
 	    ;; the new cut-off-2 is not exact, but better than leaving it unmodified.
 	    ;; making it exact seems a waste of time
@@ -106,10 +105,10 @@ for all i < n :   v_i + gap <= v_n"
 	  :for min-v = (min-v v)
 	  :for max-v = (max-v v)
 	  :when (> max-v cut-off-2) :do
-	    (funcall fn-without> (domain problem v) cut-off-2)
+	    (update-domain problem v (funcall fn-without> (domain problem v) cut-off-2))
 	    (fset:includef vars-changed v)
 	  :when (< cut-off-1 min-v) :do
-	    (funcall fn-without< (domain problem boundary-v) (+ min-v gap))
+	    (update-domain problem boundary-v (funcall fn-without< (domain problem boundary-v) (+ min-v gap)))
 	    (fset:includef vars-changed boundary-v)
 	    ;; the new cut-off-2 is not exact, but better than leaving it unmodified.
 	    ;; making it exact seems a waste of time
