@@ -97,3 +97,38 @@ The modification is the whole point of this macro."
 	  ,@body
 	  (go loop)
 	  end)))
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+
+(define-method-combination max-union ()
+  ((methods () :required t))  ;; Do we need required, we could just return empty if there is no method??
+
+
+  (if (rest methods)
+      (flet ((wrap-call (m) `(let ((r (call-method ,m)))
+			       (cond
+				((eq r nil)) ; do nothing
+				((fset:set? r)
+				 (setf work (fset:union work r)))
+
+				(t (error "Result for combination should be an fset:set"))))))
+	
+	`(let ((result (fset:empty-set))
+	       work)
+	   (tagbody
+	    start
+	      (setf work (fset:empty-set))
+	      ,@ (mapcar #'wrap-call methods)
+	      (when (fset:empty? work) (go end))
+	      (setf result (fset:union result work))
+	      (go start)
+	    end)
+	   result))
+
+      ;; single case
+      `(call-method ,(first methods))))
+
+
+

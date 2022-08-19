@@ -79,4 +79,26 @@
     (add-<y p "a" "c")
     (add-<x p "c" "d")
     (add-<y p "b" "d")
-    (solve s p)))
+      (solve s p)))
+
+
+
+;;; test method combination
+
+
+(defclass A ()
+  ((sets-a :accessor sets-a :initform (list (fset:empty-set) (fset:set 2 3 4) (fset:set 5 'a)  ))))
+
+(defclass B ()
+  ((sets-b :accessor sets-b :initform (list (fset:set 'a 'b) (fset:set 'a) (fset:set 'd) ))))
+
+(defclass C (A B) ())
+
+(defgeneric test-m (a) (:method-combination max-union))
+
+(defmethod test-m ((a A))
+  (pop (sets-a a)))
+
+(defmethod test-m ((b B))
+  (pop (sets-b b)))
+

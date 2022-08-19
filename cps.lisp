@@ -56,6 +56,7 @@ PROB1 and PROB2 are copies of PROBLEM, but with the domain of VARIABLE reduced."
   (:documentation "First propagate the domain of VARS and after that call solve the reduced problem."))
 
 (defgeneric propagate (solver problem vars)
+  (:method-combination max-union)
   (:documentation "Takes SOLVER and PROBLEM and a list VARS of variables.
 It will take the list of variables as being updated, and it solve all
 constraints that involve these variables.  If this updating reduces an
