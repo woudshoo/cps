@@ -21,6 +21,9 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Helper functions
 
+(defun update-domain-with-fn (problem v fn &rest args)
+  (update-domain problem v (apply fn (domain problem v) v args)))
+
 (defun propagate-<=-internal (problem constraint fn-min fn-max fn-without< fn-without>)
   "Function used to implement ordering constraint.
 If the variables of the constraint are (v_1, v_2, ..., v_n) the following constraint holds:
@@ -37,7 +40,7 @@ for all i > 1:    v_{i-1} + gap <= v_i."
 	(fset:do-seq (v (var-seq constraint))
 	  (when cut-off
 	    (when (< (min-v v) cut-off)
-	      (update-domain problem v (funcall fn-without< (domain problem v) cut-off))
+	      (update-domain-with-fn problem v fn-without< cut-off)
 	      (fset:includef vars-changed v)))
 	  (setf cut-off (+ gap (min-v v))))
 	;; walk right to left
@@ -45,7 +48,7 @@ for all i > 1:    v_{i-1} + gap <= v_i."
 	(fset:do-seq (v (var-seq constraint) :from-end? t)
 	  (when cut-off
 	    (when (> (max-v v) cut-off)
-	      (update-domain problem v (funcall fn-without> (domain problem v) cut-off))
+	      (update-domain-with-fn problem v fn-without> cut-off)
 	      (fset:includef vars-changed v)))
 	  (setf cut-off (- (max-v v) gap))))
       vars-changed))
@@ -72,10 +75,10 @@ for all i > i :   v_1 + gap <= v_i"
 	  :for min-v = (min-v v)
 	  :for max-v = (max-v v)
 	  :when (< min-v cut-off-1) :do
-	    (update-domain problem v (funcall fn-without< (domain problem v) cut-off-1))
+	    (update-domain-with-fn problem v fn-without< cut-off-1)
 	    (fset:includef vars-changed v)
 	  :when (> cut-off-2 max-v) :do
-	    (update-domain problem boundary-v (funcall fn-without> (domain problem boundary-v) (- max-v gap)))
+	    (update-domain-with-fn problem boundary-v fn-without> (- max-v gap))
 	    (fset:includef vars-changed boundary-v)
 	    ;; the new cut-off-2 is not exact, but better than leaving it unmodified.
 	    ;; making it exact seems a waste of time
@@ -105,10 +108,10 @@ for all i < n :   v_i + gap <= v_n"
 	  :for min-v = (min-v v)
 	  :for max-v = (max-v v)
 	  :when (> max-v cut-off-2) :do
-	    (update-domain problem v (funcall fn-without> (domain problem v) cut-off-2))
+	    (update-domain-with-fn problem v fn-without> cut-off-2)
 	    (fset:includef vars-changed v)
 	  :when (< cut-off-1 min-v) :do
-	    (update-domain problem boundary-v (funcall fn-without< (domain problem boundary-v) (+ min-v gap)))
+	    (update-domain-with-fn problem boundary-v fn-without< (+ min-v gap))
 	    (fset:includef vars-changed boundary-v)
 	    ;; the new cut-off-2 is not exact, but better than leaving it unmodified.
 	    ;; making it exact seems a waste of time

@@ -14,4 +14,5 @@
    #:basic-problem
    #:add-2d-variable
    #:add-<y-constraint
-   #:add-<x-constraint))
+   #:add-<x-constraint
+   #:basic-2d-<=-q1-constraint))
