@@ -22,7 +22,7 @@
 ;;; Helper functions
 
 (defun update-domain-with-fn (problem v fn &rest args)
-  (update-domain problem v (apply fn (domain problem v) v args)))
+  (update-domain problem v (apply fn (domain problem v) args)))
 
 (defun propagate-<=-internal (problem constraint fn-min fn-max fn-without< fn-without>)
   "Function used to implement ordering constraint.

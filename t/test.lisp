@@ -1,5 +1,9 @@
-(in-package #:cps)
+(defpackage #:cps/test
+  (:use #:cl #:5am #:cps)
+  (:import-from #:cps
+		#:set-from-list #:seq-from-list))
 
+(in-package #:cps/test)
 
 
 (defun make-basic-problem (var-with-domains)
@@ -15,31 +19,14 @@
   (let ((constraint (make-instance 'basic-all-different :variables (set-from-list vars))))
     (add-constraint problem constraint)))
 
-
-
 (defun test-1 ()
   (let ((p (make-basic-problem '((x 3 4 5 6) (y 2 3 4) (z 1 3 10))))
 	(s (make-instance 'basic-solver)))
     (add-all-different p '(x y z))
     (add-constraint p (make-instance 'basic-<=-constraint :var-seq (seq-from-list '(y x z)) :gap 1) )
-;    (propagate s p (variables p))
-    (format t "PP: ~A~%~%" p)
     p
-    (solve s p)
-    ))
+    (solve s p)))
 
-
-
-
-
-#+nil (defun add-2d-variable (problem var max-x max-y)
-  (let ((2d-domain (make-instance 'basic-2d-domain
-				  :content
-				  (seq-from-list
-				   (loop :for x :upto max-x
-					 :append (loop :for y :upto max-y
-						       :collect (cons x y)))))))
-    (add-variable problem var 2d-domain)))
 
 
 (defun add-<x (p a b)
@@ -60,7 +47,7 @@
     (add-2d-variable p 'c :max-x 3 :max-y 3)
     (add-2d-variable p 'd :max-x 4 :max-y 3)
     (add-all-different p '(a b c d))
-    (add-constraint p (make-instance 'basic-2d-range-x-constraint :var-seq '(a b c d) :gap 2))
+    (add-constraint p (make-instance 'basic-2d-range-x-constraint :var-seq '(a b c d) :gap 1))
     (add-<x p 'a 'b)
     (add-<y p 'a 'c)
     (add-<x p 'c 'd)
@@ -84,33 +71,4 @@
 
 
 
-;;; test method combination
-
-
-(defclass A ()
-  ((sets-a :accessor sets-a :initform (list (fset:empty-set) (fset:set 2 3 4) (fset:set 5 'a)  ))))
-
-(defclass B ()
-  ((sets-b :accessor sets-b :initform (list (fset:set 'a 'b) (fset:set 'a) (fset:set 'd) ))))
-
-(defclass C (A B) ())
-
-(defgeneric test-m (a) (:method-combination max-union))
-
-(defmethod test-m ((a A))
-  (pop (sets-a a)))
-
-(defmethod test-m ((b B))
-  (pop (sets-b b)))
-
-
-;;;;;;;;;;;
-;;; domain test
-
-
-(defun test-d-1 ()
-  (let ((p (make-instance 'basic-problem)))
-    (add-2d-variable p 'a :max-x 3 :max-y 3)
-    (format t "DOmain: ~A~%" (domain p 'a))
-    (domain-without->-x )))
 

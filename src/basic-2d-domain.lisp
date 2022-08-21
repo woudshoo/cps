@@ -29,7 +29,6 @@
 (make-domain-filter (domain-without-<-y basic-2d-domain value)
 		    (lambda (v) (>= (y-value v) value)))
 
-
 (make-domain-filter (domain-without->-x basic-2d-domain value)
 		    (lambda (v) (<= (x-value v) value)))
 
