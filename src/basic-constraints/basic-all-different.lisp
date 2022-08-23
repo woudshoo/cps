@@ -7,7 +7,7 @@
 when a domain becomes size 1."))
 
 
-(defmethod propagate ((solver solver) (problem basic-problem) (constraint basic-all-different))
+(defmethod propagate ((solver solver) (problem problem) (constraint basic-all-different))
 ;  (format t "P: ~A~%" constraint)
   (let ((vars-changed (fset:empty-set)))
     (fset/do-set (var vars-todo (variables constraint))

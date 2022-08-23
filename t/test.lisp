@@ -5,6 +5,8 @@
 
 (in-package #:cps/test)
 
+(def-suite :cps)
+(in-suite :cps)
 
 (defun make-basic-problem (var-with-domains)
   (let ((var-map (fset:empty-map))
@@ -19,13 +21,13 @@
   (let ((constraint (make-instance 'basic-all-different :variables (set-from-list vars))))
     (add-constraint problem constraint)))
 
-(defun test-1 ()
+(test test-1 ()
   (let ((p (make-basic-problem '((x 3 4 5 6) (y 2 3 4) (z 1 3 10))))
 	(s (make-instance 'basic-solver)))
     (add-all-different p '(x y z))
     (add-constraint p (make-instance 'basic-<=-constraint :var-seq (seq-from-list '(y x z)) :gap 1) )
     p
-    (solve s p)))
+    (is (solve s p))))
 
 
 
@@ -39,7 +41,7 @@
 				   :gap 1
 				   :var-seq (seq-from-list (list a b)))))
 
-(defun test-2 ()
+(test test-2 
   (let ((p (make-instance 'basic-problem))
 	(s (make-instance 'basic-solver)))
     (add-2d-variable p 'a :max-x 3 :max-y 3)
@@ -52,12 +54,12 @@
     (add-<y p 'a 'c)
     (add-<x p 'c 'd)
     (add-<y p 'b 'd)
-    (solve s p)))
+    (is (solve s p))))
 
 
-(defun test-3 ()
-    (let ((p (make-instance 'basic-problem))
-	  (s (make-instance 'basic-solver)))
+(test test-3 ()
+  (let ((p (make-instance 'basic-problem))
+	(s (make-instance 'basic-solver)))
     (add-2d-variable p "a" :max-x 3 :max-y 3)
     (add-2d-variable p "b" :max-x 3 :max-y 3)
     (add-2d-variable p "c" :max-x 3 :max-y 3)
@@ -67,7 +69,7 @@
     (add-<y p "a" "c")
     (add-<x p "c" "d")
     (add-<y p "b" "d")
-      (solve s p)))
+    (is (solve s p))))
 
 
 

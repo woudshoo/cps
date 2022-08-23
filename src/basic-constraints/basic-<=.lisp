@@ -122,7 +122,7 @@ for all i < n :   v_i + gap <= v_n"
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; 1D ordered constraint ------------------------------------------------------------
 (defclass basic-<=-constraint (basic-ordered-constraint) ())
-(defmethod propagate ((solver solver) (problem basic-problem) (constraint basic-<=-constraint))
+(defmethod propagate ((solver solver) (problem problem) (constraint basic-<=-constraint))
   (propagate-<=-internal problem constraint
 			 #'min-value #'max-value
 			 #'domain-without-< #'domain-without->))
@@ -130,14 +130,14 @@ for all i < n :   v_i + gap <= v_n"
 
 ;;;;
 (defclass basic-1-<=-rest-constraint (basic-ordered-constraint) ())
-(defmethod propagate ((solver solver) (problem basic-problem) (constraint basic-1-<=-rest-constraint))
+(defmethod propagate ((solver solver) (problem problem) (constraint basic-1-<=-rest-constraint))
   (propagate-min-internal problem constraint
 			 #'min-value #'max-value
 			 #'domain-without-< #'domain-without->))
 
 
 (defclass basic-rest-<=-1-constraint (basic-ordered-constraint) ())
-(defmethod propagate ((solver solver) (problem basic-problem) (constraint basic-rest-<=-1-constraint))
+(defmethod propagate ((solver solver) (problem problem) (constraint basic-rest-<=-1-constraint))
   (propagate-max-internal problem constraint
 			 #'min-value #'max-value
 			 #'domain-without-< #'domain-without->))
@@ -147,7 +147,7 @@ for all i < n :   v_i + gap <= v_n"
 
 ;;; 2D  X constraint --------------------------------------------------------------------------------
 (defclass basic-2d-<=-x-constraint (basic-ordered-constraint) ())
-(defmethod propagate ((solver solver) (problem basic-problem) (constraint basic-2d-<=-x-constraint))
+(defmethod propagate ((solver solver) (problem problem) (constraint basic-2d-<=-x-constraint))
   (propagate-<=-internal problem constraint
 			 #'min-x-value #'max-x-value
 			 #'domain-without-<-x #'domain-without->-x))
@@ -156,7 +156,7 @@ for all i < n :   v_i + gap <= v_n"
 (defclass basic-2d-<=-y-constraint (basic-ordered-constraint)
   ())
 
-(defmethod propagate ((solver solver) (problem basic-problem) (constraint basic-2d-<=-y-constraint))
+(defmethod propagate ((solver solver) (problem problem) (constraint basic-2d-<=-y-constraint))
   (propagate-<=-internal problem constraint
 			 #'min-y-value #'max-y-value
 			 #'domain-without-<-y #'domain-without->-y))
@@ -169,14 +169,14 @@ So basically, B is the first quadrant relative to A."))
 ;;; ranges
 
 (defclass basic-2d-1-<=-rest-x-constraint (basic-ordered-constraint) ())
-(defmethod propagate ((solver solver) (problem basic-problem) (constraint basic-2d-1-<=-rest-x-constraint))
+(defmethod propagate ((solver solver) (problem problem) (constraint basic-2d-1-<=-rest-x-constraint))
   (propagate-min-internal problem constraint
 			 #'min-x-value #'max-x-value
 			 #'domain-without-<-x #'domain-without->-x))
 
 
 (defclass basic-2d-1-<=-rest-y-constraint (basic-ordered-constraint) ())
-(defmethod propagate ((solver solver) (problem basic-problem) (constraint basic-2d-1-<=-rest-y-constraint))
+(defmethod propagate ((solver solver) (problem problem) (constraint basic-2d-1-<=-rest-y-constraint))
   (propagate-min-internal problem constraint
 			 #'min-y-value #'max-y-value
 			 #'domain-without-<-y #'domain-without->-y))
@@ -185,14 +185,14 @@ So basically, B is the first quadrant relative to A."))
 
 
 (defclass basic-2d-rest-<=-1-x-constraint (basic-ordered-constraint) ())
-(defmethod propagate ((solver solver) (problem basic-problem) (constraint basic-2d-rest-<=-1-x-constraint))
+(defmethod propagate ((solver solver) (problem problem) (constraint basic-2d-rest-<=-1-x-constraint))
   (propagate-max-internal problem constraint
 			 #'min-x-value #'max-x-value
 			 #'domain-without-<-x #'domain-without->-x))
 
 
 (defclass basic-2d-rest-<=-1-y-constraint (basic-ordered-constraint) ())
-(defmethod propagate ((solver solver) (problem basic-problem) (constraint basic-2d-rest-<=-1-y-constraint))
+(defmethod propagate ((solver solver) (problem problem) (constraint basic-2d-rest-<=-1-y-constraint))
   (propagate-max-internal problem constraint
 			 #'min-y-value #'max-y-value
 			 #'domain-without-<-y #'domain-without->-y))
