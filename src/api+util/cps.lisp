@@ -101,8 +101,6 @@ nil does not guarentee a solution. "))
 (defmethod domain-size (problem variable)
   (size (domain problem variable)))
 
-#+nil(defmethod domain-size (problem (variable (eql t)))
-  (fset:reduce #'+ (variables problem) :key (lambda (v) (domain-size problem v))))
 
 (defmethod domain-size (problem (variables fset:set))
   (fset:reduce #'+ variables :key (lambda (v) (domain-size problem v))))

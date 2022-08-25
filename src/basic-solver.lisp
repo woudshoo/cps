@@ -30,29 +30,6 @@ It requires that the problem to be solved supports the following:
 	       (fset:excludef constraints-todo constraint))))
   (fset:empty-set))
 
-#+nil (defmethod propagate ((solver basic-solver) (problem problem) (vars list))
-  (propagate solver problem (set-from-list vars)))
-
-#+nil (defmethod propagate ((solver basic-solver) (problem problem) (var symbol))
-  "This is a shortcut, should not be used because it limits var's to be symbols"
-  (propagate solver problem (fset:set var)))
-
-
-;;;; Picking Branch variable
-#+nil (defmethod pick-variable ((solver basic-solver) (problem problem))
-  (loop :with vars = (variables problem)
-	:with result-var = nil
-	:with result-ds  = nil
-	:until (fset:empty? vars)
-	:for var = (fset:arb vars)
-	:for ds  = (domain-size problem var)
-	:do
-	   (fset:excludef vars var)
-	   (when (and (> ds 1)
-		      (or (not result-ds) (> result-ds ds)))
-	     (setf result-ds ds)
-	     (setf result-var var))
-	:finally (return result-var)))
 
 (defmethod pick-variable ((solver basic-solver) (problem problem))
   (let (result-var result-ds)
