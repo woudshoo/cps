@@ -25,19 +25,19 @@
   (let ((p (make-basic-problem '((x 3 4 5 6) (y 2 3 4) (z 1 3 10))))
 	(s (make-instance 'basic-solver)))
     (add-all-different p '(x y z))
-    (add-constraint p (make-instance 'basic-<=-constraint :var-seq (seq-from-list '(y x z)) :gap 1) )
+    (add-constraint p (make-instance 'basic-<= :var-seq (seq-from-list '(y x z)) :gap 1) )
     p
     (is (solve s p))))
 
 
 
 (defun add-<x (p a b)
-  (add-constraint p (make-instance 'basic-2d-<=-x-constraint
+  (add-constraint p (make-instance 'basic-2d-x-<=
 				   :gap 1
 				   :var-seq (seq-from-list (list a b)))))
 
 (defun add-<y (p a b)
-  (add-constraint p (make-instance 'basic-2d-<=-y-constraint
+  (add-constraint p (make-instance 'basic-2d-y-<=
 				   :gap 1
 				   :var-seq (seq-from-list (list a b)))))
 
@@ -49,7 +49,7 @@
     (add-2d-variable p 'c :max-x 3 :max-y 3)
     (add-2d-variable p 'd :max-x 4 :max-y 3)
     (add-all-different p '(a b c d))
-    (add-constraint p (make-instance 'basic-2d-range-x-constraint :var-seq '(a b c d) :gap 1))
+    (add-constraint p (make-instance 'basic-2d-x-<=-1-*-1 :var-seq '(a b c d) :gap 1))
     (add-<x p 'a 'b)
     (add-<y p 'a 'c)
     (add-<x p 'c 'd)

@@ -1,7 +1,6 @@
 (in-package #:cps)
 
 
-
 (defclass basic-ordered-constraint (constraint)
   ((variables :reader variables)
    (var-seq :reader var-seq :initarg :var-seq)
@@ -121,86 +120,82 @@ for all i < n :   v_i + gap <= v_n"
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; 1D ordered constraint ------------------------------------------------------------
-(defclass basic-<=-constraint (basic-ordered-constraint) ())
-(defmethod propagate ((solver solver) (problem problem) (constraint basic-<=-constraint))
+(defclass basic-<= (basic-ordered-constraint) ())
+(defmethod propagate ((solver solver) (problem problem) (constraint basic-<=))
   (propagate-<=-internal problem constraint
 			 #'min-value #'max-value
 			 #'domain-without-< #'domain-without->))
 
 
 ;;;;
-(defclass basic-1-<=-rest-constraint (basic-ordered-constraint) ())
-(defmethod propagate ((solver solver) (problem problem) (constraint basic-1-<=-rest-constraint))
+(defclass basic-<=-1-* (basic-ordered-constraint) ())
+(defmethod propagate ((solver solver) (problem problem) (constraint basic-<=-1-*))
   (propagate-min-internal problem constraint
 			 #'min-value #'max-value
 			 #'domain-without-< #'domain-without->))
 
 
-(defclass basic-rest-<=-1-constraint (basic-ordered-constraint) ())
-(defmethod propagate ((solver solver) (problem problem) (constraint basic-rest-<=-1-constraint))
+(defclass basic-<=-*-1 (basic-ordered-constraint) ())
+(defmethod propagate ((solver solver) (problem problem) (constraint basic-<=-*-1))
   (propagate-max-internal problem constraint
 			 #'min-value #'max-value
 			 #'domain-without-< #'domain-without->))
 
 
-(defclass basic-range-constraint (basic-1-<=-rest-constraint basic-rest-<=-1-constraint) ())
+(defclass basic-<=-1-*-1 (basic-<=-1-* basic-<=-*-1) ())
 
 ;;; 2D  X constraint --------------------------------------------------------------------------------
-(defclass basic-2d-<=-x-constraint (basic-ordered-constraint) ())
-(defmethod propagate ((solver solver) (problem problem) (constraint basic-2d-<=-x-constraint))
+(defclass basic-2d-x-<= (basic-ordered-constraint) ())
+(defmethod propagate ((solver solver) (problem problem) (constraint basic-2d-x-<=))
   (propagate-<=-internal problem constraint
 			 #'min-x-value #'max-x-value
 			 #'domain-without-<-x #'domain-without->-x))
 
 ;;; 2D Y constraint
-(defclass basic-2d-<=-y-constraint (basic-ordered-constraint)
-  ())
-
-(defmethod propagate ((solver solver) (problem problem) (constraint basic-2d-<=-y-constraint))
+(defclass basic-2d-y-<= (basic-ordered-constraint)  ())
+(defmethod propagate ((solver solver) (problem problem) (constraint basic-2d-y-<=))
   (propagate-<=-internal problem constraint
 			 #'min-y-value #'max-y-value
 			 #'domain-without-<-y #'domain-without->-y))
 
 ;;; 2D Q1 constraint
-(defclass basic-2d-<=-q1-constraint (basic-2d-<=-x-constraint basic-2d-<=-y-constraint) ()
+(defclass basic-2d-q1-<= (basic-2d-x-<= basic-2d-y-<=) ()
   (:documentation "A <=-q1 B is the same as a_x <= b_x and a_y <= b_y.
 So basically, B is the first quadrant relative to A."))
 
 ;;; ranges
 
-(defclass basic-2d-1-<=-rest-x-constraint (basic-ordered-constraint) ())
-(defmethod propagate ((solver solver) (problem problem) (constraint basic-2d-1-<=-rest-x-constraint))
+(defclass basic-2d-x-<=-1-* (basic-ordered-constraint) ())
+(defmethod propagate ((solver solver) (problem problem) (constraint basic-2d-x-<=-1-*))
   (propagate-min-internal problem constraint
 			 #'min-x-value #'max-x-value
 			 #'domain-without-<-x #'domain-without->-x))
 
 
-(defclass basic-2d-1-<=-rest-y-constraint (basic-ordered-constraint) ())
-(defmethod propagate ((solver solver) (problem problem) (constraint basic-2d-1-<=-rest-y-constraint))
+(defclass basic-2d-y-<=-1-* (basic-ordered-constraint) ())
+(defmethod propagate ((solver solver) (problem problem) (constraint basic-2d-y-<=-1-*))
   (propagate-min-internal problem constraint
 			 #'min-y-value #'max-y-value
 			 #'domain-without-<-y #'domain-without->-y))
 
 
-
-
-(defclass basic-2d-rest-<=-1-x-constraint (basic-ordered-constraint) ())
-(defmethod propagate ((solver solver) (problem problem) (constraint basic-2d-rest-<=-1-x-constraint))
+(defclass basic-2d-x-<=-*-1 (basic-ordered-constraint) ())
+(defmethod propagate ((solver solver) (problem problem) (constraint basic-2d-x-<=-*-1))
   (propagate-max-internal problem constraint
 			 #'min-x-value #'max-x-value
 			 #'domain-without-<-x #'domain-without->-x))
 
 
-(defclass basic-2d-rest-<=-1-y-constraint (basic-ordered-constraint) ())
-(defmethod propagate ((solver solver) (problem problem) (constraint basic-2d-rest-<=-1-y-constraint))
+(defclass basic-2d-y-<=-*-1 (basic-ordered-constraint) ())
+(defmethod propagate ((solver solver) (problem problem) (constraint basic-2d-y-<=-*-1))
   (propagate-max-internal problem constraint
 			 #'min-y-value #'max-y-value
 			 #'domain-without-<-y #'domain-without->-y))
 
 ;;;
 
-(defclass basic-2d-range-x-constraint      (basic-2d-1-<=-rest-x-constraint basic-2d-rest-<=-1-x-constraint) ())
-(defclass basic-2d-range-y-constraint      (basic-2d-1-<=-rest-y-constraint basic-2d-rest-<=-1-y-constraint) ())
-(defclass basic-2d-1-<=-q1-rest-constraint (basic-2d-1-<=-rest-x-constraint basic-2d-1-<=-rest-y-constraint) ())
-(defclass basic-2d-rest-<=-q1-1-constraint (basic-2d-rest-<=-1-x-constraint basic-2d-rest-<=-1-y-constraint) ())
-(defclass basic-2d-range-constraint        (basic-2d-range-x-constraint     basic-2d-range-y-constraint)     ())
+(defclass basic-2d-x-<=-1-*-1              (basic-2d-x-<=-1-* basic-2d-x-<=-*-1) ())
+(defclass basic-2d-y-<=-1-*-1              (basic-2d-y-<=-1-* basic-2d-y-<=-*-1) ())
+(defclass basic-2d-q1-<=-1-*               (basic-2d-x-<=-1-* basic-2d-y-<=-1-*) ())
+(defclass basic-2d-q1-<=-*-1               (basic-2d-x-<=-*-1 basic-2d-y-<=-*-1) ())
+(defclass basic-2d-q1-<=-1-*-1             (basic-2d-x-<=-1-*-1 basic-2d-y-<=-1-*-1) ())

@@ -15,22 +15,23 @@
    #:add-2d-variable
    #:add-<y-constraint
    #:add-<x-constraint
-   #:basic-2d-<=-q1-constraint
    #:basic-all-different
    #:add-constraint
-   #:basic-2d-range-constraint
-   #:basic-2d-rest-<=-q1-1-constraint
-   #:basic-2d-1-<=-q1-rest-constraint
-   #:basic-2d-range-y-constraint
-   #:basic-2d-range-x-constraint
-   #:basic-2d-rest-<=-1-y-constraint
-   #:basic-2d-rest-<=-1-x-constraint
-   #:basic-2d-1-<=-rest-y-constraint
-   #:basic-2d-1-<=-rest-x-constraint
-   #:basic-2d-<=-y-constraint
-   #:basic-2d-<=-x-constraint
-   #:basic-rest-<=-1-constraint
-   #:basic-1-<=-rest-constraint
-   #:basic-<=-constraint
    #:basic-domain
-   #:basic-number-domain))
+   #:basic-number-domain
+   #:basic-<=
+   #:basic-<=-1-*
+   #:basic-<=-*-1
+   #:basic-<=-1-*-1
+   #:basic-2d-x-<=
+   #:basic-2d-y-<=
+   #:basic-2d-q1-<=
+   #:basic-2d-x-<=-1-*
+   #:basic-2d-y-<=-1-*
+   #:basic-2d-x-<=-*-1
+   #:basic-2d-y-<=-*-1
+   #:basic-2d-x-<=-1-*-1
+   #:basic-2d-y-<=-1-*-1
+   #:basic-2d-q1-<=-1-*
+   #:basic-2d-q1-<=-*-1
+   #:basic-2d-q1-<=-1-*-1))
