@@ -1,8 +1,7 @@
 (in-package #:cps)
 
-(defclass basic-all-different (constraint)
-  ((variables :reader variables :initarg :variables))
-  (:default-initargs :variables (fset:empty-set))
+(defclass basic-all-different (basic-constraint)
+  ()
   (:documentation "Very stupid all different, only propagates
 when a domain becomes size 1."))
 

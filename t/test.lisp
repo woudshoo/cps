@@ -74,3 +74,15 @@
 
 
 
+(test basic-= ()
+  (let ((p (make-instance 'basic-problem))
+	(c (make-instance 'basic-= :variables (fset:set 'a 'b 'c)))
+	(s (make-instance 'basic-solver)))
+    (add-1d-variable p 'a :values '(2 1 3))
+    (add-1d-variable p 'b :values '(4 2 8 3))
+    (add-1d-variable p 'c :values '(3 2))
+    (let ((changed (cps::propagate s p c)))
+      (is (fset:equal? changed (fset:set 'a 'b))))
+    (is (fset:equal? (cps::content (cps::domain p 'a)) (fset:seq 2 3)))
+    (is (fset:equal? (cps::content (cps::domain p 'b)) (fset:seq 2 3)))
+    (is (fset:equal? (cps::content (cps::domain p 'c)) (fset:seq 3 2)))))

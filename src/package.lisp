@@ -34,4 +34,6 @@
    #:basic-2d-y-<=-1-*-1
    #:basic-2d-q1-<=-1-*
    #:basic-2d-q1-<=-*-1
-   #:basic-2d-q1-<=-1-*-1))
+   #:basic-2d-q1-<=-1-*-1
+   #:basic-=
+   #:add-1d-variable))

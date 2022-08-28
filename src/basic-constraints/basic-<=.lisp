@@ -1,6 +1,10 @@
 (in-package #:cps)
 
-
+;; Should this be a subclass of basic-constraint??
+;; argument for, it shared the slot variables
+;; argument against, conceptually this only operatores
+;; on the var-seq, and the variables is just for
+;; caching and satisfiying the interface.
 (defclass basic-ordered-constraint (constraint)
   ((variables :reader variables)
    (var-seq :reader var-seq :initarg :var-seq)

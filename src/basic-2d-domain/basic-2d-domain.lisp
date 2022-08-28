@@ -49,7 +49,7 @@
     (add-variable problem var 2d-domain)))
 
 (defmethod add-<x-constraint ((problem basic-problem) var-a var-b)
-  (add-constraint problem (make-instance 'basic-2d-x-<=-x
+  (add-constraint problem (make-instance 'basic-2d-x-<=
 					 :gap 1
 					 :var-seq (seq-from-list (list var-a var-b)))))
 

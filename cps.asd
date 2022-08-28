@@ -2,7 +2,7 @@
 
 (asdf:defsystem #:cps
   :description "Describe cps here"
-  :author "Your Name <your.name@example.com>"
+  :author "Wim Oudshoorn <woudshoo@xs4all.nl>"
   :license  "Specify license here"
   :version "0.0.1"
   :depends-on (#:wo-util #:fset #:alexandria)
@@ -30,14 +30,15 @@
 
 	       (:module "basic-constraints"
 		:components ((:file "basic-constraints" )
-			     (:file "basic-all-different")
-			     (:file "basic-<="))
+			     (:file "basic-all-different" :depends-on ("basic-constraints"))
+			     (:file "basic-<=")
+			     (:file "basic-=" :depends-on ("basic-constraints")))
 		:depends-on ("package" "api+util" "basic-1d-domain" "basic-2d-domain")))
   
   :in-order-to ((test-op (test-op :cps/test))))
 
 
-(asdf:defsystem :cps/test
+(asdf:defsystem "cps/test"
   :depends-on (:cps :fiveam)
   :pathname "t/"
   :components ((:file "test"))

@@ -21,3 +21,9 @@ If the domainis empty return nil."
 If the domain is empty return nil."
   (unless (fset:empty? (content domain))
     (fset:reduce #'max (content domain))))
+
+
+(defmethod add-1d-variable ((problem basic-problem) var &key values)
+  (let ((1d-domain (make-instance 'basic-number-domain
+				  :content (seq-from-list values))))
+    (add-variable problem var 1d-domain)))
