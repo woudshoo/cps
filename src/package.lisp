@@ -12,6 +12,7 @@
    #:solver
    #:basic-solver
    #:solve
+   #:add-1d-variable
    #:add-2d-variable
    #:add-<y-constraint
    #:add-<x-constraint
@@ -36,4 +37,5 @@
    #:basic-2d-q1-<=-*-1
    #:basic-2d-q1-<=-1-*-1
    #:basic-=
-   #:add-1d-variable))
+   #:basic-x-=
+   #:basic-y-=))
