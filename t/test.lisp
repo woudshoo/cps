@@ -101,7 +101,44 @@
     (is (= 4 (cps::domain-size p 'a)))
     (is (= 12 (cps::domain-size p 'b)))
     (is (= 8 (cps::domain-size p 'c)))
-    
-#+nil    (is (fset:equal? (cps::content (cps::domain p 'a)) (fset:seq 2 3)))
-#+nil    (is (fset:equal? (cps::content (cps::domain p 'b)) (fset:seq 2 3)))
-#+nil    (is (fset:equal? (cps::content (cps::domain p 'c)) (fset:seq 3 2)))))
+    #+nil    (is (fset:equal? (cps::content (cps::domain p 'a)) (fset:seq 2 3)))
+    #+nil    (is (fset:equal? (cps::content (cps::domain p 'b)) (fset:seq 2 3)))
+    #+nil    (is (fset:equal? (cps::content (cps::domain p 'c)) (fset:seq 3 2)))))
+
+
+
+(test outside-rectangle ()
+      (let ((p (make-instance 'basic-problem))
+	    (c (make-instance 'basic-2d-not-q1-<=-1-*-1 :var-seq (fset:seq 'a 'b 'c)))
+	    (s (make-instance 'basic-solver)))
+	(add-variable p 'a (make-instance 'basic-2d-domain :content (fset:seq '(2 . 2))))
+	(add-variable p 'c (make-instance 'basic-2d-domain :content (fset:seq '(5 . 5))))
+	(add-variable p 'b (make-instance 'basic-2d-domain
+					  :content (fset:seq '(2 . 2) '(2 . 5) '(3 . 3) '(1 . 5) '(1 . 3)
+							     '(3 . 1) '(3 . 7) '(5 . 5))))
+	(add-constraint p c)
+
+	(let ((changed (cps::propagate s p c)))
+	  (is (fset:equal? changed (fset:set 'b))))
+
+	(is (fset:equal? (fset:seq  '(1 . 5) '(1 . 3) '(3 . 1) '(3 . 7)
+				   )
+			 (cps::content (cps::domain p 'b))))))
+
+(test inside-rectangle ()
+      (let ((p (make-instance 'basic-problem))
+	    (c (make-instance 'basic-2d-q1-<=-1-*-1 :var-seq (fset:seq 'a 'b 'c)))
+	    (s (make-instance 'basic-solver)))
+	(add-variable p 'a (make-instance 'basic-2d-domain :content (fset:seq '(2 . 2))))
+	(add-variable p 'c (make-instance 'basic-2d-domain :content (fset:seq '(5 . 5))))
+	(add-variable p 'b (make-instance 'basic-2d-domain
+					  :content (fset:seq '(2 . 2) '(2 . 5) '(3 . 3) '(1 . 5) '(1 . 3)
+							     '(3 . 1) '(3 . 7) '(5 . 5))))
+	(add-constraint p c)
+
+	(let ((changed (cps::propagate s p c)))
+	  (is (fset:equal? changed (fset:set 'b))))
+
+	(is (fset:equal? (fset:seq '(2 . 2) '(2 . 5) '(3 . 3) '(5 . 5))
+			 (cps::content (cps::domain p 'b))))))
+

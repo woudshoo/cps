@@ -203,3 +203,47 @@ So basically, B is the first quadrant relative to A."))
 (defclass basic-2d-q1-<=-1-*               (basic-2d-x-<=-1-* basic-2d-y-<=-1-*) ())
 (defclass basic-2d-q1-<=-*-1               (basic-2d-x-<=-*-1 basic-2d-y-<=-*-1) ())
 (defclass basic-2d-q1-<=-1-*-1             (basic-2d-x-<=-1-*-1 basic-2d-y-<=-1-*-1) ())
+
+
+;;; name with not is not so good.  Not clear what the not applies to
+(defclass basic-2d-not-q1-<=-1-*-1 (basic-ordered-constraint)
+  ()
+  (:documentation "Basically means, all points outside of the rectangle indicated by the first and las point"))
+
+(defmethod propagate ((solver solver) (problem problem) (constraint basic-2d-not-q1-<=-1-*-1))
+  (flet ((min-x-v (v)
+	   (or (min-x-value (domain problem v)) (return-from propagate (fset:empty-set))))
+	 (min-y-v (v)
+	   (or (min-y-value (domain problem v)) (return-from propagate (fset:empty-set))))
+	 (max-x-v (v)
+	   (or (max-x-value (domain problem v)) (return-from propagate (fset:empty-set))))
+	 (max-y-v (v)
+	   (or (max-y-value (domain problem v)) (return-from propagate (fset:empty-set)))))
+    
+    (let* ((vars-changed (fset:empty-set))
+	   (variables (var-seq constraint))
+	   (first (fset:first variables))
+	   (last (fset:last variables))
+	   (gap (gap constraint))
+	   (f-m-x (+ (max-x-v first) gap))
+	   (f-m-y (+ (max-y-v first) gap))
+	   (l-m-x (- (min-x-v last) gap))
+	   (l-m-y (- (min-y-v last) gap))
+	   (iter (fset:iterator variables)))
+      ;; <= or < ??? and < and > or < and >= ...
+      (flet ((filter (p) (or (< (x-value p) f-m-x)
+			     (> (x-value p) l-m-x)
+			     (< (y-value p) f-m-y)
+			     (> (y-value p) l-m-y))))
+	(funcall iter :get)
+	(loop
+	  :for v = (funcall iter :get)
+	  :while v
+	  :until (eql v last)
+	  :for domain = (domain problem v)
+	  :for dc = (content domain)
+	  :for nd = (fset:filter #'filter dc)
+	  :unless (fset:equal? dc nd) :do
+	    (fset:includef vars-changed v)
+	    (update-domain problem v (make-instance (class-of domain) :content nd))))
+      vars-changed)))
