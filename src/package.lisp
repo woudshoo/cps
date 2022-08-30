@@ -41,4 +41,5 @@
    #:basic-y-=
    #:add-variable
    #:basic-2d-domain
-   #:basic-2d-not-q1-<=-1-*-1))
+   #:basic-2d-not-q1-<=-1-*-1
+   #:variables))
