@@ -15,6 +15,7 @@
 		:depends-on ("package"))
 	       
 	       (:file "basic-problem" :depends-on ("api+util" "package"))
+	       (:file "optimizing-problem" :depends-on ("api+util" "package" "basic-problem"))
 	       (:file "basic-solver" :depends-on ("api+util" "package"))
 	       (:file "basic-domain" :depends-on ("api+util" "package"))
 

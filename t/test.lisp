@@ -17,6 +17,15 @@
 	     (fset:includef var-map var (make-instance 'basic-number-domain :content (seq-from-list values))))
     (make-instance 'basic-problem :var-map var-map :variables vars)))
 
+(defun make-optimizing-problem (var-with-domains)
+  (let ((var-map (fset:empty-map))
+	(vars (fset:empty-set)))
+    (loop :for (var . values) :in var-with-domains
+	  :do
+	     (fset:includef vars var)
+	     (fset:includef var-map var (make-instance 'basic-number-domain :content (seq-from-list values))))
+    (make-instance 'optimizing-problem :var-map var-map :variables vars)))
+
 (defun add-all-different (problem vars)
   (let ((constraint (make-instance 'basic-all-different :variables (set-from-list vars))))
     (add-constraint problem constraint)))
@@ -146,12 +155,11 @@
 
 
 (test optimizing-solver-1 ()
-  (let ((p (make-basic-problem '((x 3 4 5 6) (y 2 3 4) (z 1 3 10 5 4))))
+  (let ((p (make-optimizing-problem '((x 3 4 5 6) (y 2 3 4) (z 1 3 10 5 4))))
 	(s (make-instance 'optimizing-solver))
 	(c (make-instance 'max-cost :variables (set-from-list '(x y z)))))
     (add-all-different p '(x y z))
-    (add-constraint p c)
-    (setf (cost-constraint s) c)
+    (setf (cost-constraint p) c)
     (add-constraint p (make-instance 'basic-<= :var-seq (seq-from-list '(y x z)) :gap 1) )
 ;    (format t "-- ~A~%" p)
     (setf p (solve s p))

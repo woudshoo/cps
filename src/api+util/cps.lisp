@@ -83,7 +83,7 @@ nil does not guarentee a solution. "))
 (defgeneric domain-size-0 (problem variable))
 (defgeneric split-domain (problem-1 problem-2 variable))
 (defgeneric add-variable (problem variable domain))
-(defgeneric add-constrant (problem constraint))
+(defgeneric add-constraint (problem constraint))
 
 (defmethod solved-p ((problem problem))
   (fset/every-with-carry-set #'domain-size-1 problem (variables problem)))

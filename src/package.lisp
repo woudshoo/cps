@@ -45,4 +45,5 @@
    #:variables
    #:optimizing-solver
    #:max-cost
-   #:cost-constraint))
+   #:cost-constraint
+   #:optimizing-problem))

@@ -1,18 +1,17 @@
 (in-package #:cps)
 
 (defclass optimizing-solver (basic-solver)
-  ((cost-constraint :initarg :cost-constraint :accessor cost-constraint))
-  (:default-initargs :cost-constraint nil)
+  ()
   (:documentation "Solver that optimizes a problem against a cost constraint."))
 
 
 
-(defmethod solve ((solver optimizing-solver) (problem problem))
+(defmethod solve ((solver optimizing-solver) (problem optimizing-problem))
   (let ((candidates (make-priority-queue))
 	(count 0)
 	(best-solution nil)
 	;; the below is dodgy, we modify the actual constraint in the original problem
-	(cost-constraint (cost-constraint solver)))
+	(cost-constraint (cost-constraint problem)))
     (unless cost-constraint (error "Should specify cost constraint in an optimizing solver"))
     (flet ((add-candidate (problem variables)
 	     (incf count)
@@ -30,7 +29,8 @@
 	       (cond
 		 ((solved-p candidate)
 		  (setf best-solution candidate)
-		  (setf (max-cost cost-constraint) (cost candidate cost-constraint)))
+		  (setf (max-cost cost-constraint) (cost candidate cost-constraint))
+		  #+nil (format t "NC: ~A -- S: ~A~%" (max-cost cost-constraint) best-solution))
 
 		 (t (let* ((var (pick-variable solver candidate))
 			   (sub (split-problem solver candidate var)))
