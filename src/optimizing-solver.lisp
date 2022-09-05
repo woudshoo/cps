@@ -29,8 +29,8 @@
 	    :do
 	       (cond
 		 ((solved-p candidate)
-		  (setf best-solution nil)
-		  (setf (max-cost cost-constraint) (cost problem cost-constraint)))
+		  (setf best-solution candidate)
+		  (setf (max-cost cost-constraint) (cost candidate cost-constraint)))
 
 		 (t (let* ((var (pick-variable solver candidate))
 			   (sub (split-problem solver candidate var)))

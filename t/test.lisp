@@ -22,12 +22,14 @@
     (add-constraint problem constraint)))
 
 (test test-1 ()
-  (let ((p (make-basic-problem '((x 3 4 5 6) (y 2 3 4) (z 1 3 10))))
+  (let ((p (make-basic-problem '((x 3 4 5 6) (y 2 3 4) (z 1 3 10 5 4))))
 	(s (make-instance 'basic-solver)))
     (add-all-different p '(x y z))
     (add-constraint p (make-instance 'basic-<= :var-seq (seq-from-list '(y x z)) :gap 1) )
-    p
-    (is (solve s p))))
+;    (format t "-- ~A~%" p)
+    (setf p (solve s p))
+;    (format t "-- ~A~%" p)
+    (is-true p)))
 
 
 
@@ -142,3 +144,16 @@
 	(is (fset:equal? (fset:seq '(2 . 2) '(2 . 5) '(3 . 3) '(5 . 5))
 			 (cps::content (cps::domain p 'b))))))
 
+
+(test optimizing-solver-1 ()
+  (let ((p (make-basic-problem '((x 3 4 5 6) (y 2 3 4) (z 1 3 10 5 4))))
+	(s (make-instance 'optimizing-solver))
+	(c (make-instance 'max-cost :variables (set-from-list '(x y z)))))
+    (add-all-different p '(x y z))
+    (add-constraint p c)
+    (setf (cost-constraint s) c)
+    (add-constraint p (make-instance 'basic-<= :var-seq (seq-from-list '(y x z)) :gap 1) )
+;    (format t "-- ~A~%" p)
+    (setf p (solve s p))
+;    (format t "-- ~A~%" p)
+    (is-true p)))

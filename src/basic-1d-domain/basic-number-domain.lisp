@@ -10,6 +10,12 @@
 (make-domain-filter (domain-without-> basic-number-domain value)
 		    (lambda (v) (<= v value)))
 
+(make-domain-filter (domain-without-<= basic-number-domain value)
+		    (lambda (v) (> v value)))
+
+(make-domain-filter (domain-without->= basic-number-domain value)
+		    (lambda (v) (< v value)))
+
 (defmethod min-value ((domain basic-number-domain))
   "Returns the smallest value of the DOMAIN.
 If the domain is empty return nil."

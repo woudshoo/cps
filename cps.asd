@@ -38,7 +38,8 @@
 	       
 	       (:module "cost-constraints"
 		:components ((:file "basic-cost-constraint")
-			     (:file "sum-cost" :depends-on ("basic-cost-constraint")))
+			     (:file "sum-cost" :depends-on ("basic-cost-constraint"))
+			     (:file "max-cost" :depends-on ("basic-cost-constraint")))
 		:depends-on ("package" "api+util" "basic-domain" )))
   
   :in-order-to ((test-op (test-op :cps/test))))

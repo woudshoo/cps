@@ -136,7 +136,7 @@ Returns a fset:set"))
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Optimizing extensions
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
+;; TODO: Should cost constraint part of problem or solver?
 (defgeneric cost-constraint (problem))
 (defgeneric cost            (problem cost-constraint))
 (defgeneric max-cost        (cost-constraint))
