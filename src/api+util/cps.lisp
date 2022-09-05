@@ -52,8 +52,6 @@ The function will return two new problems as a cons cell: (PROB1 . PROB2).
 
 PROB1 and PROB2 are copies of PROBLEM, but with the domain of VARIABLE reduced."))
 
-(defgeneric propagate-and-solve (solver problem &rest vars)
-  (:documentation "First propagate the domain of VARS and after that call solve the reduced problem."))
 
 (defgeneric propagate (solver problem vars)
   (:method-combination max-union)
@@ -105,9 +103,6 @@ nil does not guarentee a solution. "))
 (defmethod domain-size (problem (variables fset:set))
   (fset:reduce #'+ variables :key (lambda (v) (domain-size problem v))))
 
-
-
-
 (defmethod domain-size-1 (problem variable)
   "Default implementation, can be improved"
   (= 1 (domain-size problem variable)))
@@ -136,3 +131,12 @@ Returns a fset:set"))
 (defmethod propagate ((solver solver) (problem problem) (constraint constraint))
   "Solve the constraint and return the variables with modified constraints."
   (fset:empty-set))
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Optimizing extensions
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defgeneric cost-constraint (problem))
+(defgeneric cost            (problem cost-constraint))
+(defgeneric max-cost        (cost-constraint))

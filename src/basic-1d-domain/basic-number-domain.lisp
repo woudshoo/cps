@@ -12,7 +12,7 @@
 
 (defmethod min-value ((domain basic-number-domain))
   "Returns the smallest value of the DOMAIN.
-If the domainis empty return nil."
+If the domain is empty return nil."
   (unless (fset:empty? (content domain))
     (fset:reduce #'min (content domain))))
 
