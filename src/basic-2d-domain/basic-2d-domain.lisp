@@ -35,6 +35,18 @@
 (make-domain-filter (domain-without->-y basic-2d-domain value)
 		    (lambda (v) (<= (y-value v) value)))
 
+(make-domain-filter (domain-without-<=-x basic-2d-domain value)
+		    (lambda (v) (> (x-value v) value)))
+
+(make-domain-filter (domain-without-<=-y basic-2d-domain value)
+		    (lambda (v) (> (y-value v) value)))
+
+(make-domain-filter (domain-without->=-x basic-2d-domain value)
+		    (lambda (v) (< (x-value v) value)))
+
+(make-domain-filter (domain-without->=-y basic-2d-domain value)
+		    (lambda (v) (< (y-value v) value)))
+
 
 (defmethod add-2d-variable ((problem basic-problem) var &key max-x max-y)
     (let ((2d-domain (make-instance 'basic-2d-domain

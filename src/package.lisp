@@ -46,4 +46,6 @@
    #:optimizing-solver
    #:max-cost
    #:cost-constraint
-   #:optimizing-problem))
+   #:optimizing-problem
+   #:max-2d-manhatten-cost
+   #:timeout))
