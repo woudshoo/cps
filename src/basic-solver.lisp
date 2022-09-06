@@ -56,7 +56,7 @@ It requires that the problem to be solved supports the following:
 	     (incf count)
 	     (propagate solver problem variables)
 	     (unless (no-solution-p problem)
-	       (priority-queue-push problem (- (domain-size problem (variables problem))) candidates))))
+	       (priority-queue-push problem (candidate-potential solver problem t) candidates))))
       
       (setf problem (copy-problem problem))
       (add-candidate problem (variables problem))

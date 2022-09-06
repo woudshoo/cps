@@ -140,3 +140,10 @@ Returns a fset:set"))
 (defgeneric cost-constraint (problem))
 (defgeneric cost            (problem cost-constraint))
 (defgeneric max-cost        (cost-constraint))
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Heuristic
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defgeneric candidate-potential (solver problem constraint))
+

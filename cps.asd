@@ -41,7 +41,11 @@
 		:components ((:file "basic-cost-constraint")
 			     (:file "sum-cost" :depends-on ("basic-cost-constraint"))
 			     (:file "max-cost" :depends-on ("basic-cost-constraint")))
-		:depends-on ("package" "api+util" "basic-domain" )))
+		:depends-on ("package" "api+util" "basic-domain" ))
+
+	       (:module "heuristics"
+		:components ((:file "candidate-selection"))
+		:depends-on ("package" "api+util" "cost-constraints" "basic-solver" "solver")))
   
   :in-order-to ((test-op (test-op :cps/test))))
 

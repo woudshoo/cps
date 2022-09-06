@@ -21,7 +21,7 @@
 			(fset:union  (propagate solver problem cost-constraint) 	     
 				     variables))
 	     (unless (no-solution-p problem)
-	       (priority-queue-push problem (- (domain-size problem (variables problem))) candidates))))
+	       (priority-queue-push problem (candidate-potential solver problem cost-constraint) candidates))))
       
       (setf problem (copy-problem problem))
       (add-candidate problem (variables problem))
@@ -33,7 +33,7 @@
 		 ((solved-p candidate)
 		  (setf best-solution candidate)
 		  (setf (max-cost cost-constraint) (cost candidate cost-constraint))
-		  (format t "NC: ~A -- S: ~A~%" (max-cost cost-constraint) best-solution))
+#+nl		  (format t "NC: ~A -- S: ~A~%" (max-cost cost-constraint) best-solution))
 
 		 (t (let* ((var (pick-variable solver candidate))
 			   (sub (split-problem solver candidate var)))
