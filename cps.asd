@@ -45,7 +45,7 @@
 
 	       (:module "heuristics"
 		:components ((:file "candidate-selection"))
-		:depends-on ("package" "api+util" "cost-constraints" "basic-solver" "solver")))
+		:depends-on ("package" "api+util" "cost-constraints" "basic-solver" "optimizing-solver")))
   
   :in-order-to ((test-op (test-op :cps/test))))
 
