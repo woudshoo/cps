@@ -48,4 +48,6 @@
    #:cost-constraint
    #:optimizing-problem
    #:max-2d-manhatten-cost
-   #:timeout))
+   #:timeout
+   #:sum-cost
+   #:cost))
