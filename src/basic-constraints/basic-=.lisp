@@ -8,7 +8,7 @@
 (defun propagate-=-internal (problem variables key-fn)
     (labels ((content-as-set (v)
 	     (fset:image key-fn
-			 (fset:convert 'fset:set (content (domain problem v)))))
+			 (fset:convert 'fset:set (domain-content problem v))))
 	   (filter-seq (seq set)
 	     (fset:filter (lambda (x) (fset:contains? set (funcall key-fn x)))
 			  seq))
@@ -65,17 +65,15 @@ The values left in X satisfy x = a*y + b*z for some y in Y and z in Z."
   (let ((new-domain-content (fset:empty-set))
 	(vars-changed (fset:empty-set)))
     
-    (fset:do-seq (y-v (content (domain problem y)))
-      (fset:do-seq (z-v (content (domain problem z)))
+    (fset:do-seq (y-v (domain-content problem y))
+      (fset:do-seq (z-v (domain-content problem z))
 	(fset:includef new-domain-content (+ (* a y-v) (* b z-v)))))
 
-    (let* ((old-content (content (domain problem x)))
-	   (new-content (fset:filter (lambda (v) (fset:contains? new-domain-content v))
-				     old-content)))
+    (let* ((old-content (domain-content problem x))
+	   (new-content (fset/intersection-seq-set old-content new-domain-content)))
 
       (unless (fset:equal? old-content new-content)
-	(update-domain problem x (make-instance (class-of (domain problem x))
-						:content new-content))
+	(setf (domain-content problem x) new-content)
 	(fset:includef vars-changed x)))
     vars-changed))
 

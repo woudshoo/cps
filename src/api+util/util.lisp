@@ -15,6 +15,10 @@
     result))
 
 
+(defun fset/intersection-seq-set (seq set)
+  (fset:filter (lambda (x) (fset:contains? set x))
+	       seq))
+
 (defun fset/some-with-carry-set (predicate carry set)
   (fset:do-set (v set)
     (when-let (result (funcall predicate carry v))

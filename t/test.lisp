@@ -92,11 +92,10 @@
     (add-1d-variable p 'a :values '(2 1 3))
     (add-1d-variable p 'b :values '(4 2 8 3))
     (add-1d-variable p 'c :values '(3 2))
-    (let ((changed (cps::propagate s p c)))
-      (is (fset:equal? changed (fset:set 'a 'b))))
-    (is (fset:equal? (cps::content (cps::domain p 'a)) (fset:seq 2 3)))
-    (is (fset:equal? (cps::content (cps::domain p 'b)) (fset:seq 2 3)))
-    (is (fset:equal? (cps::content (cps::domain p 'c)) (fset:seq 3 2)))))
+    (is (fset:equal? (cps::propagate s p c) (fset:set 'a 'b)))
+    (is (fset:equal? (domain-content p 'a) (fset:seq 2 3)))
+    (is (fset:equal? (domain-content p 'b) (fset:seq 2 3)))
+    (is (fset:equal? (domain-content p 'c) (fset:seq 3 2)))))
 
 
 (test basic-x-= ()
@@ -106,15 +105,13 @@
     (add-2d-variable p 'a :max-x 3 :max-y 1)
     (add-2d-variable p 'b :max-x 2 :max-y 5)
     (add-2d-variable p 'c :max-x 1 :max-y 3)
-    (let ((changed (cps::propagate s p c)))
-      (is (fset:equal? changed (fset:set 'a 'b))))
-
+    (is (fset:equal? (cps::propagate s p c) (fset:set 'a 'b)))
     (is (= 4 (cps::domain-size p 'a)))
     (is (= 12 (cps::domain-size p 'b)))
     (is (= 8 (cps::domain-size p 'c)))
-    #+nil    (is (fset:equal? (cps::content (cps::domain p 'a)) (fset:seq 2 3)))
-    #+nil    (is (fset:equal? (cps::content (cps::domain p 'b)) (fset:seq 2 3)))
-    #+nil    (is (fset:equal? (cps::content (cps::domain p 'c)) (fset:seq 3 2)))))
+    #+nil    (is (fset:equal? (domain-content p 'a) (fset:seq 2 3)))
+    #+nil    (is (fset:equal? (domain-content p 'b) (fset:seq 2 3)))
+    #+nil    (is (fset:equal? (domain-content p 'c) (fset:seq 3 2)))))
 
 (test basic-x=y+z-1 ()
     (let ((p (make-instance 'basic-problem))
@@ -123,11 +120,10 @@
     (add-1d-variable p 'a :values '(2 1 3 4))
     (add-1d-variable p 'b :values '(4 2 8 3))
     (add-1d-variable p 'c :values '(3 2))
-    (let ((changed (cps::propagate s p c)))
-      (is (fset:equal? changed (fset:set 'a 'b 'c))))
-    (is (fset:equal? (cps::content (cps::domain p 'a)) (fset:seq 4)))
-    (is (fset:equal? (cps::content (cps::domain p 'b)) (fset:seq 2)))
-    (is (fset:equal? (cps::content (cps::domain p 'c)) (fset:seq 2)))))
+    (is (fset:equal? (cps::propagate s p c) (fset:set 'a 'b 'c)))
+    (is (fset:equal? (domain-content p 'a) (fset:seq 4)))
+    (is (fset:equal? (domain-content p 'b) (fset:seq 2)))
+    (is (fset:equal? (domain-content p 'c) (fset:seq 2)))))
 
 (test basic-x=y+z-2 ()
     (let ((p (make-instance 'basic-problem))
@@ -136,11 +132,10 @@
     (add-1d-variable p 'a :values '(2 1 3 4 10 12))
     (add-1d-variable p 'b :values '(4 2 8 3))
     (add-1d-variable p 'c :values '(3 2 8 9))
-    (let ((changed (cps::propagate s p c)))
-      (is (fset:equal? changed (fset:set 'a 'c))))
-    (is (fset:equal? (cps::content (cps::domain p 'a)) (fset:seq 4 10 12)))
-    (is (fset:equal? (cps::content (cps::domain p 'b)) (fset:seq 4 2 8 3)))
-    (is (fset:equal? (cps::content (cps::domain p 'c)) (fset:seq 2 8 9)))))
+    (is (fset:equal? (cps::propagate s p c) (fset:set 'a 'c)))
+    (is (fset:equal? (domain-content p 'a) (fset:seq 4 10 12)))
+    (is (fset:equal? (domain-content p 'b) (fset:seq 4 2 8 3)))
+    (is (fset:equal? (domain-content p 'c) (fset:seq 2 8 9)))))
 
 (test outside-rectangle ()
       (let ((p (make-instance 'basic-problem))
@@ -153,12 +148,9 @@
 							     '(3 . 1) '(3 . 7) '(5 . 5))))
 	(add-constraint p c)
 
-	(let ((changed (cps::propagate s p c)))
-	  (is (fset:equal? changed (fset:set 'b))))
-
-	(is (fset:equal? (fset:seq  '(1 . 5) '(1 . 3) '(3 . 1) '(3 . 7)
-				   )
-			 (cps::content (cps::domain p 'b))))))
+	(is (fset:equal? (cps::propagate s p c) (fset:set 'b)))
+	(is (fset:equal? (fset:seq  '(1 . 5) '(1 . 3) '(3 . 1) '(3 . 7))
+			 (domain-content p 'b)))))
 
 (test inside-rectangle ()
       (let ((p (make-instance 'basic-problem))
@@ -171,11 +163,9 @@
 							     '(3 . 1) '(3 . 7) '(5 . 5))))
 	(add-constraint p c)
 
-	(let ((changed (cps::propagate s p c)))
-	  (is (fset:equal? changed (fset:set 'b))))
-
+	(is (fset:equal? (cps::propagate s p c) (fset:set 'b)))
 	(is (fset:equal? (fset:seq '(2 . 2) '(2 . 5) '(3 . 3) '(5 . 5))
-			 (cps::content (cps::domain p 'b))))))
+			 (domain-content p 'b)))))
 
 
 (test optimizing-solver-1 ()
@@ -185,9 +175,7 @@
     (add-all-different p '(x y z))
     (setf (cost-constraint p) c)
     (add-constraint p (make-instance 'basic-<= :var-seq (seq-from-list '(y x z)) :gap 1) )
-;    (format t "-- ~A~%" p)
     (setf p (solve s p))
-;    (format t "-- ~A~%" p)
     (is-true p)))
 
 

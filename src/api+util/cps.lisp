@@ -77,6 +77,8 @@ nil does not guarentee a solution. "))
 (defgeneric variables (problem))
 (defgeneric copy-problem (problem))
 (defgeneric domain (problem variable))
+(defgeneric domain-content (problem variable))
+(defgeneric (setf domain-content) (value problem variable))
 (defgeneric update-domain (problem variable domain))
 (defgeneric domain-size (problem variable))
 (defgeneric domain-size-1 (problem variable))
@@ -96,9 +98,14 @@ nil does not guarentee a solution. "))
   "Hm, is this really needed?"
   (error "Need concrete sub class"))
 
+(defmethod domain-content ((problem problem) variable)
+  (content (domain problem variable)))
+
+(defmethod (setf domain-content) (value (problem problem) variable)
+  (update-domain problem variable (make-instance (class-of (domain problem variable)) :content value)))
+
 (defmethod domain-size (problem variable)
   (size (domain problem variable)))
-
 
 (defmethod domain-size (problem (variables fset:set))
   (fset:reduce #'+ variables :key (lambda (v) (domain-size problem v))))

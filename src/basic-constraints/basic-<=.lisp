@@ -240,10 +240,9 @@ So basically, B is the first quadrant relative to A."))
 	  :for v = (funcall iter :get)
 	  :while v
 	  :until (eql v last)
-	  :for domain = (domain problem v)
-	  :for dc = (content domain)
+	  :for dc = (domain-content problem v)
 	  :for nd = (fset:filter #'filter dc)
 	  :unless (fset:equal? dc nd) :do
 	    (fset:includef vars-changed v)
-	    (update-domain problem v (make-instance (class-of domain) :content nd))))
+	    (setf (domain-content problem v) nd)))
       vars-changed)))
