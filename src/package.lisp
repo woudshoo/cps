@@ -50,4 +50,7 @@
    #:max-2d-manhatten-cost
    #:timeout
    #:sum-cost
-   #:cost))
+   #:cost
+   #:basic-x=y+z
+   #:max-2d-x-cost
+   #:max-2d-y-cost))
