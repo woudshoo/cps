@@ -27,30 +27,27 @@
     (make-instance 'optimizing-problem :var-map var-map :variables vars)))
 
 (defun add-all-different (problem vars)
-  (let ((constraint (make-instance 'basic-all-different :variables (set-from-list vars))))
-    (add-constraint problem constraint)))
+  (add-constraint problem 'basic-all-different :variables (set-from-list vars)))
 
 (test test-1 ()
   (let ((p (make-basic-problem '((x 3 4 5 6) (y 2 3 4) (z 1 3 10 5 4))))
 	(s (make-instance 'basic-solver)))
-    (add-all-different p '(x y z))
-    (add-constraint p (make-instance 'basic-<= :var-seq (seq-from-list '(y x z)) :gap 1) )
-;    (format t "-- ~A~%" p)
+    (add-constraint p 'basic-all-different :variables (fset:set 'x 'y 'z))
+    (add-constraint p 'basic-<= :var-seq (seq-from-list '(y x z)) :gap 1 )
     (setf p (solve s p))
-;    (format t "-- ~A~%" p)
     (is-true p)))
 
 
 
 (defun add-<x (p a b)
-  (add-constraint p (make-instance 'basic-2d-x-<=
-				   :gap 1
-				   :var-seq (seq-from-list (list a b)))))
+  (add-constraint p 'basic-2d-x-<=
+		  :gap 1
+		  :var-seq (seq-from-list (list a b))))
 
 (defun add-<y (p a b)
-  (add-constraint p (make-instance 'basic-2d-y-<=
-				   :gap 1
-				   :var-seq (seq-from-list (list a b)))))
+  (add-constraint p 'basic-2d-y-<=
+		  :gap 1
+		  :var-seq (seq-from-list (list a b))))
 
 (test test-2 
   (let ((p (make-instance 'basic-problem))
@@ -59,8 +56,8 @@
     (add-2d-variable p 'b :max-x 3 :max-y 3)
     (add-2d-variable p 'c :max-x 3 :max-y 3)
     (add-2d-variable p 'd :max-x 4 :max-y 3)
-    (add-all-different p '(a b c d))
-    (add-constraint p (make-instance 'basic-2d-x-<=-1-*-1 :var-seq '(a b c d) :gap 1))
+    (add-constraint p 'basic-all-different :variables (fset:set 'a 'b 'c 'd))
+    (add-constraint p 'basic-2d-x-<=-1-*-1 :var-seq '(a b c d) :gap 1)
     (add-<x p 'a 'b)
     (add-<y p 'a 'c)
     (add-<x p 'c 'd)
@@ -75,7 +72,7 @@
     (add-2d-variable p "b" :max-x 3 :max-y 3)
     (add-2d-variable p "c" :max-x 3 :max-y 3)
     (add-2d-variable p "d" :max-x 2 :max-y 3)
-    (add-all-different p '("a" "b" "c" "d"))
+    (add-constraint p 'basic-all-different :variables (fset:set "a" "b" "c" "d"))
     (add-<x p "a" "b")
     (add-<y p "a" "c")
     (add-<x p "c" "d")
@@ -174,7 +171,7 @@
 	(c (make-instance 'max-cost :variables (set-from-list '(x y z)))))
     (add-all-different p '(x y z))
     (setf (cost-constraint p) c)
-    (add-constraint p (make-instance 'basic-<= :var-seq (seq-from-list '(y x z)) :gap 1) )
+    (add-constraint p 'basic-<= :var-seq (seq-from-list '(y x z)) :gap 1 )
     (setf p (solve s p))
     (is-true p)))
 
@@ -185,7 +182,7 @@
 	(c (make-instance 'sum-cost :variables (set-from-list '(x y z)))))
     (add-all-different p '(x y z))
     (setf (cost-constraint p) c)
-    (add-constraint p (make-instance 'basic-<= :var-seq (seq-from-list '(x z)) :gap 2) )
+    (add-constraint p  'basic-<= :var-seq (seq-from-list '(x z)) :gap 2 )
     (setf p (solve s p))
     (is-true p)
     (is (= 12 (cost p c)))))

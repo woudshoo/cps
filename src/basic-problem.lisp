@@ -26,7 +26,7 @@
 (defmethod constraints ((problem basic-problem) var)
   (or (fset:lookup (constraint-map problem) var) (fset:empty-set)))
 
-(defmethod add-constraint ((problem basic-problem) (constraint constraint))
+(defmethod add-constraint ((problem basic-problem) (constraint constraint) &key)
   (with-slots (constraint-map) problem
     (fset:do-set (v (variables constraint))
       (setf constraint-map
