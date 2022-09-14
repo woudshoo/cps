@@ -2,7 +2,7 @@
 @title(Introduction)
 
 @begin(section)
-@title(What is a Constraint Solver?)
+@title(What is a Constraint Solver)
 
 A constraint solver is a program that solves problems which can be formulated with the following concepts:
 
@@ -35,6 +35,7 @@ can consists of arbitrary sets.
 
 @begin(section)
 @title(This Project)
+
 This project started as a base for a diagram layout tool.  This has some consequences:
 
 @begin(list)
