@@ -1,0 +1,50 @@
+@begin(section)
+@title(Introduction)
+
+@begin(section)
+@title(What is a Constraint Solver?)
+
+A constraint solver is a program that solves problems which can be formulated with the following concepts:
+
+@begin(deflist)
+@term(A set of Variables)
+@def(Each variable has a set of possible values associated with them.  For
+     example the variable @i(x) has domain {1, 2, 3})
+
+@term(A Domain)
+@def(A set of possible values for a variable.)
+@term(A set of constraints)
+@item(Each constraint refers to some variables and describes valid combination of values.
+An example is @i(x < y).)
+@end(deflist)
+
+An example problem is:
+
+@begin(code)
+x in {1, 2, 3}
+y in {-1, 0, 2}
+x < y
+@end(code)
+
+A solution, in this case unique, is @i(x)=1 and @i(y)=2.
+
+This example uses domains that consists of integers, however this is not required at all.  The domains
+can consists of arbitrary sets.
+
+@end(section)
+
+@begin(section)
+@title(This Project)
+This project started as a base for a diagram layout tool.  This has some consequences:
+
+@begin(list)
+@item(Raw performance is not a goal.)
+@item(There is a focus on 2-D domains.)
+@end(list)
+
+In addition I use this project as a way to get comfortable with some new libraries and functionalities
+of common list.  This includes @c(fset) and @c(CLOS).  This hinders raw performance, but
+in my use case, off-line layout, it is more important to formulate the problem in a form that is easily tractable than  raw speed.
+
+@end(section)
+@end(section)
