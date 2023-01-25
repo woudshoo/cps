@@ -4,4 +4,4 @@
               :authors ("Willem Rein Oudshoorn")
               :output-format (:type :multi-html
                               :template :minima)
-              :sources ("manual.scr"))))
+              :sources ("manual.scr" "overview.scr"))))

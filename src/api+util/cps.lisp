@@ -74,9 +74,12 @@ nil does not guarentee a solution. "))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defgeneric variables (problem))
+(defgeneric variables (problem/constraint)
+  (:documentation "Returns a set (as in @c(fset:set)) of variables that are contained or used by
+@c(problem/constraint)."))
 (defgeneric copy-problem (problem))
-(defgeneric domain (problem variable))
+(defgeneric domain (problem variable)
+  (:documentation "A domain that encapsulate a set of values for a variable."))
 (defgeneric domain-content (problem variable))
 (defgeneric (setf domain-content) (value problem variable))
 (defgeneric update-domain (problem variable domain))

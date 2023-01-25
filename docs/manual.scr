@@ -14,14 +14,14 @@ A constraint solver is a program that solves problems which can be formulated wi
 @term(A Domain)
 @def(A set of possible values for a variable.)
 @term(A set of constraints)
-@item(Each constraint refers to some variables and describes valid combination of values.
+@def(Each constraint refers to some variables and describes valid combination of values.
 An example is @i(x < y).)
 @end(deflist)
 
 An example problem is:
 
 @begin(code)
-x in {1, 2, 3}
+@tex(x \in {1, 2, 3})
 y in {-1, 0, 2}
 x < y
 @end(code)
