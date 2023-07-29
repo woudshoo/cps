@@ -1,0 +1,47 @@
+@begin(section)
+@title(Overview)
+
+As stated in the introduction there are three main concepts to describe a problem.
+
+@begin(list)
+@item(Variables)
+@item(Domains)
+@item(Constraints)
+@end(list)
+
+@begin[path=abstract-class-diagram.svg format=svg](plantuml)
+@begin(verb)
+@startuml
+abstract problem {
+fset:set variables ()
+domain domain (variable)
+fset:set constraints (variable)
+}
+abstract variable 
+abstract constraint {
+fset:set variables ()
+}
+abstract domain
+problem --> "0..*" constraint
+problem --> "1" domain
+problem ---> "1..*" variable
+constraint --> "1..*" variable
+(problem,domain) <.. variable
+(problem,constraint) <.. variable
+@enduml
+@end(verb)
+@end(plantuml)
+
+@cl:with-package[name="cps"](
+@cl:doc(generic variables)
+@cl:doc(generic constraints)
+@cl:doc(generic domain))
+
+And two main classes to work a problem
+
+@begin(list)
+@item(problem)
+@item(solver)
+@end(list)
+
+@end(section)

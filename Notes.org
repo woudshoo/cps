@@ -1,0 +1,97 @@
+* Building
+
+** Documentation
+
+This uses =codex=, so building the documentation should be done with:
+
+#+begin_src lisp
+(codex:document 'cps)
+#+end_src
+
+However, this will probably lead to some errors, one is that plantuml can not be run.
+Either by not being able to run =java=, or the =plantuml.jar= file cannot be found.
+
+For the =plantuml.jar= do something like this:
+
+#+begin_src lisp
+(setf common-doc.plantuml:*plantuml-command*
+   (list "java" "-Djava.awt.headless=true"
+                "-jar" "/Users/wimoudshoorn/bin/plantuml-1.2022.7.jar"))
+#+end_src
+
+
+Next problem is perhaps that =plantuml= cannot find =dot=.
+For me downloading a newer =jar= file solved the problem.  (The one that worked was =plantuml-1.2023.10.jar=).
+
+* Hm Organizing
+
+** should basic-solver solve optimizing-problems in an optimizing way?
+
++ Less classes
+- cannot solve non optimizing (could make this dependent on no cost function, but awkward.)
+
+
+** The cost function is now modified in the original problem.
+
+This is bad from expectation stand point.
+Problem is:
+- cost constraint should be shared/updated for all the candidates to do proper pruning.
+
+
+** Should optimizing-solver inherit from basic-solver
+
+- Advantage, it now inherits the propagate and split problem from basic-problem.
+- Con: Not really related???
+
+
+- Could have non-optimizing-solver inherit from basic-solver??
+  
+
+
+  
+* 2d x and y versions
+
+** Seem to implement both versions with lots of duplicated code
+
+
+Idea:
+- have projection constraints project-x project-y
+- Have x< and y< implemented as (compose < project-?)
+
+This requires additional variables.
+
+Instead of creating exra constraints and variables for every projection we can have:
+
+- (get-or-create-variable project-? (fset:set point)), to retrieve the
+  variable '??' that satisfies (project-x point ??)
+
+  The get-or-create should be generic to find variables.
+
+
+Drawback, lots of constraints use ordered input so maybe:
+
+- (get-or-create-variable project-? (fset:seq nil point))
+
+  Where nil is the placeholder
+
+
+
+Different name
+
+(find-variable-in-constraint project-? (fset:seq nil point))
+
+However for constraint that operate on sets:
+
+(find-variable-in-constraint project-? (fset:set point))
+
+
+Now we need an interface to create the constraint:
+
+- (add-constraint problem 'point-x< :var-seq .. .. ..)
+
+  
+
+
+
+  
+    
