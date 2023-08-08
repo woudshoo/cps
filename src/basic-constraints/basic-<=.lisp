@@ -118,7 +118,7 @@ for all i < n :   v_i + gap <= v_n"
 	    (fset:includef vars-changed boundary-v)
 	    ;; the new cut-off-2 is not exact, but better than leaving it unmodified.
 	    ;; making it exact seems a waste of time
-	    (setf cut-off-2 min-v)))
+	    (setf cut-off-1 min-v)))
     vars-changed))
 
 
