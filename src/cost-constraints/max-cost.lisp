@@ -54,8 +54,8 @@
       (fset:do-set (v (variables constraint))
 	(cond
 	  ((domain-size-0 problem v) (return-from propagate (fset:empty-set)))
-	  ((>= (max-x-value (domain problem v)) cost)
-	   (update-domain-with-fn problem v #'domain-without->=-x cost)
+	  ((>= (max-y-value (domain problem v)) cost)
+	   (update-domain-with-fn problem v #'domain-without->=-y cost)
 	   (fset:includef vars-changed v)))))
     vars-changed))
 
