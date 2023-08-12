@@ -54,4 +54,7 @@
    #:basic-x=y+z
    #:max-2d-x-cost
    #:max-2d-y-cost
-   #:domain-content))
+   #:domain-content
+   #:basic-x=abs-y-z
+   #:no-solution-p
+   #:solved-p))

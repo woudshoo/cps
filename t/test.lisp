@@ -135,6 +135,24 @@
     (is (fset:equal? (domain-content p 'c) (fset:seq 2 8 9)))))
 
 
+
+(test basic-x=abs-y-z-1 ()
+  (let ((p (make-instance 'basic-problem))
+	(c (make-instance 'basic-x=abs-y-z :x 'x :y 'y :z 'z))
+	(s (make-instance 'basic-solver)))
+    (add-constraint p c)
+    (add-1d-variable p 'x :values '(-10 -8 -3 3 10 12))
+    (add-1d-variable p 'y :values '(-20 -8 33 10))
+    (add-1d-variable p 'z :values '(8 -7 22 -13))
+    (setf p (solve s p))
+    (is-true p)
+    (is-true (solved-p p))
+    (is (fset:equal? (domain-content p 'x) (fset:seq 12)))
+    (is (fset:equal? (domain-content p 'y) (fset:seq 10)))
+    (is (fset:equal? (domain-content p 'z) (fset:seq 22)))))
+
+
+
 (test basic-2d-<=-1-* ()
   (let ((p (make-instance 'basic-problem))
 	(c-1 (make-instance 'basic-<=-1-* :var-seq (seq-from-list (list 'll 'b 'c )) :gap 0))

@@ -59,23 +59,36 @@
   (setf (slot-value constraint 'variables) (fset:set x y z)))
 
 
+(defun domain-a*y+b*z (problem a y b z)
+  "Returns the domain of a*y+b*z with a and b scalars
+and y and z variables"
+  (let ((content (fset:empty-set)))
+    (fset:do-seq (y-v (domain-content problem y))
+      (fset:do-seq (z-v (domain-content problem z))
+	(fset:includef content (+ (* a y-v) (* b z-v)))))
+    content))
+
+(defun restrict-domain (problem variable domain-content)
+  "Update the domain to variable to the intersection
+of the old domain with domain-content.
+
+domain-content is an fset of values.
+
+Returns a fset containing variable if the content is changed, or an
+empty fset if it is not changed."
+  (let* ((old-content (domain-content problem variable))
+	 (new-content (fset/intersection-seq-set old-content domain-content)))
+
+    (if (fset:equal? old-content new-content)
+	(fset:set)
+	(progn
+	  (setf (domain-content problem variable) new-content)
+	  (fset:set variable)))))
+
 (defun propagate-x=a*y+b*z-internal (problem x a y b z)
   "Reduces domain of X based on possible values of Y and Z.
 The values left in X satisfy x = a*y + b*z for some y in Y and z in Z."
-  (let ((new-domain-content (fset:empty-set))
-	(vars-changed (fset:empty-set)))
-    
-    (fset:do-seq (y-v (domain-content problem y))
-      (fset:do-seq (z-v (domain-content problem z))
-	(fset:includef new-domain-content (+ (* a y-v) (* b z-v)))))
-
-    (let* ((old-content (domain-content problem x))
-	   (new-content (fset/intersection-seq-set old-content new-domain-content)))
-
-      (unless (fset:equal? old-content new-content)
-	(setf (domain-content problem x) new-content)
-	(fset:includef vars-changed x)))
-    vars-changed))
+  (restrict-domain problem x (domain-a*y+b*z problem a y b z)))
 
 
 
@@ -89,3 +102,33 @@ The values left in X satisfy x = a*y + b*z for some y in Y and z in Z."
       (propagate-x=a*y+b*z-internal problem y 1 x -1 z))
      (propagate-x=a*y+b*z-internal problem z 1 x -1 y))))
 
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defclass basic-x=abs-y-z (basic-constraint)
+    ((x :reader x :initarg :x)
+     (y :reader y :initarg :y)
+     (z :reader z :initarg :z))
+  (:documentation "Constraint x = abs(y-z)"))
+
+(defmethod initialize-instance :after ((constraint basic-x=abs-y-z) &key x y z)
+  (setf (slot-value constraint 'variables) (fset:set x y z)))
+
+(defmethod propagate ((solver solver) (problem problem) (constraint basic-x=abs-y-z))
+  (let ((x (x constraint))
+	(y (y constraint))
+	(z (z constraint)))
+    (fset:union
+     (fset:union
+      (restrict-domain problem x
+		       (fset:union
+			(fset:filter (lambda (v) (>= v 0)) (domain-a*y+b*z problem 1 y -1 z))
+			(fset:filter (lambda (v) (>= v 0)) (domain-a*y+b*z problem -1 y 1 z))))
+      (restrict-domain problem y
+		       (fset:union
+			(domain-a*y+b*z problem 1 x 1 z)
+			(domain-a*y+b*z problem -1 x 1 z))))
+     (restrict-domain problem z
+		      (fset:union
+		       (domain-a*y+b*z problem 1 y -1 x)
+		       (domain-a*y+b*z problem 1 y 1 x))))))
