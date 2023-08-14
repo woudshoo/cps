@@ -121,9 +121,10 @@ The values left in X satisfy x = a*y + b*z for some y in Y and z in Z."
     (fset:union
      (fset:union
       (restrict-domain problem x
-		       (fset:union
-			(fset:filter (lambda (v) (>= v 0)) (domain-a*y+b*z problem 1 y -1 z))
-			(fset:filter (lambda (v) (>= v 0)) (domain-a*y+b*z problem -1 y 1 z))))
+		       (fset:filter (lambda (v) (>= v 0))
+				    (fset:union
+				     (domain-a*y+b*z problem 1 y -1 z)
+				     (domain-a*y+b*z problem -1 y 1 z))))
       (restrict-domain problem y
 		       (fset:union
 			(domain-a*y+b*z problem 1 x 1 z)
