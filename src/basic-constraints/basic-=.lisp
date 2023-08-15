@@ -138,3 +138,67 @@ The values left in X satisfy x = a*y + b*z for some y in Y and z in Z."
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 
+(defclass basic-sum-1-* (basic-ordered-constraint) ())
+(defmethod propagate ((solver solver) (problem problem) (constraint basic-sum-1-*))
+  (let* ((variables (var-seq constraint))
+	(var-iter (fset:iterator variables))
+	(min-values (list))
+	(max-values (list))
+	(max-sum 0) 
+	(min-sum 0)
+	(vars-changed (fset:set)))
+    
+    ;; setup and calculate values before propagation
+    (fset:do-seq (v variables)
+      (let* ((domain (domain problem v))
+	     (min (min-value domain))
+	     (max (max-value domain)))
+	;; assume if min or max do not exist, the domain is empty
+	(unless (and min max) (return-from propagate vars-changed))
+	(assert domain)
+	(assert max)
+	(assert min)
+	(push min min-values)
+	(push max max-values)
+	(incf min-sum min)
+	(incf max-sum max)))
+    (setf min-values (nreverse min-values))
+    (setf max-values (nreverse max-values))
+
+    ;;; first variable is special
+    (when (funcall var-iter :done?) (return-from propagate vars-changed))
+    (let ((first-v (funcall var-iter :get))
+	  (min (pop min-values))
+	  (max (pop max-values)))
+      (when (> max (- max-sum max))
+	(update-domain-with-fn problem first-v #'domain-without-> (- max-sum max))
+	(fset:includef vars-changed first-v))
+      (when (< min (- min-sum min))
+	(update-domain-with-fn problem first-v #'domain-without-< (- min-sum min))
+	(fset:includef vars-changed first-v))
+      (decf min-sum (+ max min))
+      (decf max-sum (+ max min)))
+
+    
+    (loop :until (funcall var-iter :done?)
+	  :for var = (funcall var-iter :get)
+	  :for min = (pop min-values)
+	  :for max = (pop max-values)
+	  :do
+	     ;; first-max - rest-min
+	     ;; first-max - (min-sum - first-min - min)
+	     ;; first-max + first-min + min - min-sum
+	     (when (> max (- min min-sum))
+	       (update-domain-with-fn problem var #'domain-without-> (- min min-sum))
+	       (fset:includef vars-changed var))
+
+
+	     ;;;  first-min - rest-max
+	     ;;;  first-min - (max-sum - first-max - max)
+	     ;;;  first-min + first-max + max - max-sum
+	     (when (< min (- max max-sum))
+	       (update-domain-with-fn problem var #'domain-without-< (- max max-sum))
+	       (fset:includef vars-changed var))
+	  )
+    vars-changed))
+

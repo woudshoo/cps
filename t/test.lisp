@@ -36,8 +36,9 @@ is returned.  The solver used is the basic-solver"
 (defun add-all-different (problem vars)
   (add-constraint problem 'basic-all-different :variables (set-from-list vars)))
 
-(defun domain-equals-p (p v &rest values)
-  (fset:equal? (domain-content p v) (seq-from-list values)))
+(defun test-domain-equals-p (p v &rest values)
+  (is (fset:equal? (domain-content p v) (seq-from-list values))
+      (format nil "Domain for ~A: ~A, Expected Domain: ~A" v (domain-content p v) (seq-from-list values))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Tests
@@ -98,9 +99,9 @@ is returned.  The solver used is the basic-solver"
     (add-1d-variable p 'b :values '(4 2 8 3))
     (add-1d-variable p 'c :values '(3 2))
     (is (fset:equal? (cps::propagate s p c) (fset:set 'a 'b)))
-    (is (domain-equals-p p 'a 2 3))
-    (is (domain-equals-p p 'b 2 3))
-    (is (domain-equals-p p 'c 3 2))))
+    (test-domain-equals-p p 'a 2 3)
+    (test-domain-equals-p p 'b 2 3)
+    (test-domain-equals-p p 'c 3 2)))
 
 
 (test basic-x-= ()
@@ -124,9 +125,9 @@ is returned.  The solver used is the basic-solver"
     (add-1d-variable p 'c :values '(3 2))
     (is (fset:equal? (cps::propagate s p c) (fset:set 'a 'b 'c)))
 
-    (is (domain-equals-p p 'a 4))
-    (is (domain-equals-p p 'b 2))
-    (is (domain-equals-p p 'c 2))))
+    (test-domain-equals-p p 'a 4)
+    (test-domain-equals-p p 'b 2)
+    (test-domain-equals-p p 'c 2)))
 
 (test basic-x=y+z-_2_ ()
   (let ((p (make-instance 'basic-problem))
@@ -136,19 +137,19 @@ is returned.  The solver used is the basic-solver"
     (add-1d-variable p 'b :values '(4 2 8 3))
     (add-1d-variable p 'c :values '(3 2 8 9))
     (is (fset:equal? (cps::propagate s p c) (fset:set 'a 'c)))
-    (is (domain-equals-p p 'a 4 10 12))
-    (is (domain-equals-p p 'b 4 2 8 3))
-    (is (domain-equals-p p 'c 2 8 9))))
+    (test-domain-equals-p p 'a 4 10 12)
+    (test-domain-equals-p p 'b 4 2 8 3)
+    (test-domain-equals-p p 'c 2 8 9)))
 
 
 (test basic-sum-1-*-_1_ ()
-  (let ((p (solved-basic-problem (p '((s 3 5 12) (a -1 2 4) (b -3 10 11) (c -7 12)))
+  (let ((p (solved-basic-problem (p '((s 3 5 12) (a -100 2 4) (b -3 10 11) (c -7 12)))
 	     (add-constraint p 'basic-sum-1-* :var-seq (seq-from-list '(s a b c))))))
     (is-true p)
-    (is (domain-equals-p p 's 5))
-    (is (domain-equals-p p 'a 2))
-    (is (domain-equals-p p 'b 10))
-    (is (domain-equals-p p 'c -7))))
+    (test-domain-equals-p p 's 5)
+    (test-domain-equals-p p 'a 2)
+    (test-domain-equals-p p 'b 10)
+    (test-domain-equals-p p 'c -7)))
 
 (test basic-x=abs-y-z-_1_ ()
   (let ((p (make-instance 'basic-problem))
@@ -160,9 +161,9 @@ is returned.  The solver used is the basic-solver"
     (setf p (solve s p))
     (is-true p)
     (is-true (solved-p p))
-    (is (domain-equals-p p 'x 12))
-    (is (domain-equals-p p 'y 10))
-    (is (domain-equals-p p 'z 22))))
+    (test-domain-equals-p p 'x 12)
+    (test-domain-equals-p p 'y 10)
+    (test-domain-equals-p p 'z 22)))
 
 
 

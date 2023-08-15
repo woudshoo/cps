@@ -34,7 +34,7 @@
 	       (:module "basic-constraints"
 		:components ((:file "basic-constraints" )
 			     (:file "basic-all-different" :depends-on ("basic-constraints"))
-			     (:file "basic-<=")
+			     (:file "basic-<=" :depends-on ("basic-constraints"))
 			     (:file "basic-=" :depends-on ("basic-constraints")))
 		:depends-on ("package" "api+util" "basic-constraint" "basic-1d-domain" "basic-2d-domain"))
 	       
