@@ -57,4 +57,5 @@
    #:domain-content
    #:basic-x=abs-y-z
    #:no-solution-p
-   #:solved-p))
+   #:solved-p
+   #:basic-sum-1-*))

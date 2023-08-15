@@ -36,12 +36,14 @@ is returned.  The solver used is the basic-solver"
 (defun add-all-different (problem vars)
   (add-constraint problem 'basic-all-different :variables (set-from-list vars)))
 
+(defun domain-equals-p (p v &rest values)
+  (fset:equal? (domain-content p v) (seq-from-list values)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Tests
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(test test-1 ()
+(test test-_1_ ()
   (is-true
    (solved-basic-problem (p '((x 3 4 5 6) (y 2 3 4) (z 1 3 10 5 4)))
      (add-constraint p 'basic-all-different :variables (fset:set 'x 'y 'z))
@@ -59,7 +61,7 @@ is returned.  The solver used is the basic-solver"
 		  :gap 1
 		  :var-seq (seq-from-list (list a b))))
 
-(test test-2
+(test test-_2_
   (is-true
    (solved-basic-problem (p)
      (add-2d-variable p 'a :max-x 3 :max-y 3)
@@ -67,14 +69,14 @@ is returned.  The solver used is the basic-solver"
      (add-2d-variable p 'c :max-x 3 :max-y 3)
      (add-2d-variable p 'd :max-x 4 :max-y 3)
      (add-constraint p 'basic-all-different :variables (fset:set 'a 'b 'c 'd))
-     (add-constraint p 'basic-2d-x-<=-1-*-1 :var-seq '(a b c d) :gap 1)
+     (add-constraint p 'basic-2d-x-<=-1-*-1 :var-seq (seq-from-list '(a b c d)) :gap 1)
      (add-<x p 'a 'b)
      (add-<y p 'a 'c)
      (add-<x p 'c 'd)
      (add-<y p 'b 'd))))
 
 
-(test test-3 ()
+(test test-_3_ ()
   (is-true
    (solved-basic-problem (p)
      (add-2d-variable p "a" :max-x 3 :max-y 3)
@@ -96,9 +98,9 @@ is returned.  The solver used is the basic-solver"
     (add-1d-variable p 'b :values '(4 2 8 3))
     (add-1d-variable p 'c :values '(3 2))
     (is (fset:equal? (cps::propagate s p c) (fset:set 'a 'b)))
-    (is (fset:equal? (domain-content p 'a) (fset:seq 2 3)))
-    (is (fset:equal? (domain-content p 'b) (fset:seq 2 3)))
-    (is (fset:equal? (domain-content p 'c) (fset:seq 3 2)))))
+    (is (domain-equals-p p 'a 2 3))
+    (is (domain-equals-p p 'b 2 3))
+    (is (domain-equals-p p 'c 3 2))))
 
 
 (test basic-x-= ()
@@ -113,33 +115,42 @@ is returned.  The solver used is the basic-solver"
     (is (= 12 (cps::domain-size p 'b)))
     (is (= 8 (cps::domain-size p 'c)))))
 
-(test basic-x=y+z-1 ()
-    (let ((p (make-instance 'basic-problem))
+(test basic-x=y+z-_1_ ()
+  (let ((p (make-instance 'basic-problem))
 	(c (make-instance 'basic-x=y+z :x 'a :y 'b :z 'c))
 	(s (make-instance 'basic-solver)))
     (add-1d-variable p 'a :values '(2 1 3 4))
     (add-1d-variable p 'b :values '(4 2 8 3))
     (add-1d-variable p 'c :values '(3 2))
     (is (fset:equal? (cps::propagate s p c) (fset:set 'a 'b 'c)))
-    (is (fset:equal? (domain-content p 'a) (fset:seq 4)))
-    (is (fset:equal? (domain-content p 'b) (fset:seq 2)))
-    (is (fset:equal? (domain-content p 'c) (fset:seq 2)))))
 
-(test basic-x=y+z-2 ()
-    (let ((p (make-instance 'basic-problem))
+    (is (domain-equals-p p 'a 4))
+    (is (domain-equals-p p 'b 2))
+    (is (domain-equals-p p 'c 2))))
+
+(test basic-x=y+z-_2_ ()
+  (let ((p (make-instance 'basic-problem))
 	(c (make-instance 'basic-x=y+z :x 'a :y 'b :z 'c))
 	(s (make-instance 'basic-solver)))
     (add-1d-variable p 'a :values '(2 1 3 4 10 12))
     (add-1d-variable p 'b :values '(4 2 8 3))
     (add-1d-variable p 'c :values '(3 2 8 9))
     (is (fset:equal? (cps::propagate s p c) (fset:set 'a 'c)))
-    (is (fset:equal? (domain-content p 'a) (fset:seq 4 10 12)))
-    (is (fset:equal? (domain-content p 'b) (fset:seq 4 2 8 3)))
-    (is (fset:equal? (domain-content p 'c) (fset:seq 2 8 9)))))
+    (is (domain-equals-p p 'a 4 10 12))
+    (is (domain-equals-p p 'b 4 2 8 3))
+    (is (domain-equals-p p 'c 2 8 9))))
 
 
+(test basic-sum-1-*-_1_ ()
+  (let ((p (solved-basic-problem (p '((s 3 5 12) (a -1 2 4) (b -3 10 11) (c -7 12)))
+	     (add-constraint p 'basic-sum-1-* :var-seq (seq-from-list '(s a b c))))))
+    (is-true p)
+    (is (domain-equals-p p 's 5))
+    (is (domain-equals-p p 'a 2))
+    (is (domain-equals-p p 'b 10))
+    (is (domain-equals-p p 'c -7))))
 
-(test basic-x=abs-y-z-1 ()
+(test basic-x=abs-y-z-_1_ ()
   (let ((p (make-instance 'basic-problem))
 	(s (make-instance 'basic-solver)))
     (add-constraint p 'basic-x=abs-y-z :x 'x :y 'y :z 'z)
@@ -149,9 +160,9 @@ is returned.  The solver used is the basic-solver"
     (setf p (solve s p))
     (is-true p)
     (is-true (solved-p p))
-    (is (fset:equal? (domain-content p 'x) (fset:seq 12)))
-    (is (fset:equal? (domain-content p 'y) (fset:seq 10)))
-    (is (fset:equal? (domain-content p 'z) (fset:seq 22)))))
+    (is (domain-equals-p p 'x 12))
+    (is (domain-equals-p p 'y 10))
+    (is (domain-equals-p p 'z 22))))
 
 
 
@@ -191,7 +202,7 @@ is returned.  The solver used is the basic-solver"
 
 
 
-(test q1-bug-1 ()
+(test q1-bug-_1_ ()
   (is-true
    (solved-basic-problem (p)
      (add-2d-variable p 'a :max-x 10 :max-y 10)
@@ -200,7 +211,7 @@ is returned.  The solver used is the basic-solver"
      (add-2d-variable p 'll :max-x 10 :max-y 10)
      (add-2d-variable p 'ur :max-x 10 :max-y 10)
      (add-constraint p 'basic-2d-x-<=       :var-seq (seq-from-list (list 'a 'b))  :gap 1)
-     (add-constraint p 'basic-2d-x-<=       :var-seq (seq-from-list (list  'c 'a)) :gap 1)
+     (add-constraint p 'basic-2d-x-<=       :var-seq (seq-from-list (list 'c 'a)) :gap 1)
      (add-constraint p 'basic-2d-x-<=-1-*-1 :var-seq (seq-from-list '(ll a b ur))))))
 
 
@@ -257,8 +268,12 @@ is returned.  The solver used is the optimzing-solver"
   `(let ((,prob (make-optimizing-problem ,var-with-domains)))
      ,@body
      (solve (make-instance 'optimizing-solver) ,prob)))
+
+(defun cost-of-problem (p)
+  (cost p (cost-constraint p)))
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(test optimizing-solver-1 ()
+
+(test optimizing-solver-_1_ ()
   (is-true
    (solved-optimizing-problem (p '((x 3 4 5 6) (y 2 3 4) (z 1 3 10 5 4)))
      (add-all-different p '(x y z))
@@ -273,4 +288,16 @@ is returned.  The solver used is the optimzing-solver"
 	     (setf (cost-constraint p) (make-instance 'sum-cost :variables (set-from-list '(x y z))))
 	     (add-constraint p  'basic-<= :var-seq (seq-from-list '(x z)) :gap 2 ))))
     (is-true p)
-    (is (= 12 (cost p (cost-constraint p))))))
+    (is (= 12 (cost-of-problem p)))))
+
+
+(test sum-cost-_2_ ()
+  (let ((p (solved-optimizing-problem (p '((x 3 4 5 6) (y 3 4) (z 1 3 10 5 4) (cost 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23)))
+	     (add-all-different p '(x y z))
+	     (setf (cost-constraint p) (make-instance 'sum-cost :variables (set-from-list '(x y z))))
+	     (add-constraint p  'basic-<= :var-seq (seq-from-list '(x z)) :gap 2 ))))
+    (is-true p)
+    (is (= 12 (cost-of-problem p)))
+    (is nil)))
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+

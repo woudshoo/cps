@@ -133,3 +133,8 @@ The values left in X satisfy x = a*y + b*z for some y in Y and z in Z."
 		      (fset:union
 		       (domain-a*y+b*z problem 1 y -1 x)
 		       (domain-a*y+b*z problem 1 y 1 x))))))
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+
