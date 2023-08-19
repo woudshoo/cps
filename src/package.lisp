@@ -58,4 +58,5 @@
    #:basic-x=abs-y-z
    #:no-solution-p
    #:solved-p
-   #:basic-sum-1-*))
+   #:basic-sum-1-*
+   #:basic-2d-d=manhatten-p))

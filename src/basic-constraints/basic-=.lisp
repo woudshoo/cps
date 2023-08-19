@@ -59,14 +59,17 @@
   (setf (slot-value constraint 'variables) (fset:set x y z)))
 
 
+(defun domain-a*y+b*z-domains (a domain-y b domain-z)
+  (let ((content (fset:empty-set)))
+    (fset:do-seq (y-v domain-y)
+      (fset:do-seq (z-v domain-z)
+	(fset:includef content (+ (* a y-v) (* b z-v)))))
+    content))
+
 (defun domain-a*y+b*z (problem a y b z)
   "Returns the domain of a*y+b*z with a and b scalars
 and y and z variables"
-  (let ((content (fset:empty-set)))
-    (fset:do-seq (y-v (domain-content problem y))
-      (fset:do-seq (z-v (domain-content problem z))
-	(fset:includef content (+ (* a y-v) (* b z-v)))))
-    content))
+  (domain-a*y+b*z-domains a  (domain-content problem y) b (domain-content problem z)))
 
 (defun restrict-domain (problem variable domain-content)
   "Update the domain to variable to the intersection
@@ -135,6 +138,41 @@ The values left in X satisfy x = a*y + b*z for some y in Y and z in Z."
 		       (domain-a*y+b*z problem 1 y 1 x))))))
 
 
+(defclass basic-2d-d=manhatten-p (basic-constraint)
+  ((d :reader d :initarg :d)
+   (p :reader p :initarg :p))
+  (:documentation "the 1-d variable d = abs(p-x)+abs(p-y)"))
+
+(defmethod initialize-instance :after ((constraint basic-2d-d=manhatten-p) &key d p)
+  (setf (slot-value constraint 'variables) (fset:set d p)))
+
+(defmethod propagate ((solver solver) (problem problem) (constraint basic-2d-d=manhatten-p))
+  (let* ((d (d constraint))
+	 (domain-d (domain problem d))
+	 (set-d (fset:set))
+	 (p (p constraint))
+	 (domain-p (domain problem p))
+	 (set-p (fset:set)))
+
+    (unless (and domain-d domain-p) (return-from propagate (fset:set)))
+
+    (fset:do-seq (d-v (content domain-d))
+      (fset:includef set-d d-v))
+    (fset:do-seq (p-v (content domain-p))
+      (fset:includef set-p p-v))
+    
+    (flet ((manhatten (point)
+	     (+ (abs (car point)) (abs (cdr point)))))
+      (fset:union
+       (restrict-domain problem d
+			(let ((d-v (fset:set)))
+			  (fset:do-seq (point (content domain-p))
+			    (fset:includef d-v (manhatten point)))
+			  d-v))
+       (restrict-domain problem p
+			(fset:filter (lambda (point) (fset:contains? set-d (manhatten point)))
+				     set-p))))))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 
@@ -201,4 +239,7 @@ The values left in X satisfy x = a*y + b*z for some y in Y and z in Z."
 	       (fset:includef vars-changed var))
 	  )
     vars-changed))
+
+
+
 
