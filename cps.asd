@@ -54,5 +54,8 @@
 (asdf:defsystem "cps/test"
   :depends-on (:cps :fiveam)
   :pathname "t/"
-  :components ((:file "test"))
+  :serial t
+  :components ((:file "package")
+	       (:file "helper")
+	       (:file "test"))
   :perform (test-op (o c) (symbol-call :5am :run! :cps)))
